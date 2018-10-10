@@ -1,0 +1,10 @@
+{
+  "nombre":"Analy",
+  "edad": 21,
+  "sueldo": 0.0,
+  "casado": false,
+  "hijos": null,
+  "mascota":{
+    "nombre":"Meow"
+  }
+}
