@@ -76,6 +76,7 @@ function anadirPuntoAlFinal(texto){
 }
 function primeraLetraEnMayuscula(texto) {
     var primeraLetraMayuscula = texto[0].toUpperCase();
+    var primeraLetraMayuscula = texto[0].toUpperCase();
     var restoPalabra = texto.slice(1, texto.length);
     return primeraLetraMayuscula + restoPalabra;
 }
