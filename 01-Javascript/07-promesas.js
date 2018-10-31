@@ -220,3 +220,36 @@ promesaCreacionArchivo(2,'C')
     );
 */
 
+//
+/*
+const ejercicioDeArchivos(arregloStrings) {  //callback asíncrono
+    return new Promise(
+        (resolve, reject) => {
+            arregloStrings.forEach(             //Síncrono
+                (string, indice)=>{
+                    const  archivo = `${indice}-${string}.txt`;
+                    const contenido = string;
+                    const arregloDeRespuestas = [];
+                    fs.writeFile(archivo,
+                        contenido,
+                        (err)=>{
+                            const respuesta = {
+                                nombreArchivo: archivo,
+                                contenidoArchivo: contenido,
+                                error: err
+
+                            };
+                            arregloDeRespuestas.push(respuesta);
+                            const tamanioRespuestas = arregloDeRespuestas.length;
+                            if(tamanioRespuestas === arregloStrings.length){
+                                return arregloDeRespuestas;
+                            }
+                        });
+                }
+            );
+        }
+    );
+
+}
+*/
+
