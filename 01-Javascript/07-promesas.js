@@ -1,6 +1,6 @@
 //promesa --> definir una nueva clase
 const fs = require('fs');
-
+/*
 const nuevaPromesaLectura = new Promise(
     (resolve) => {
         fs.readFile('06-texto.txt', 'utf-8',
@@ -41,7 +41,8 @@ nuevaPromesaLectura
     )
     .then(
         (contenidoCompleto) => {
-            console.log('Contenido completo', contenidoCompleto)
+            console.log('Contenido completo', contenidoCompleto);
+            return nuevaPromesaEscritura(contenidoCompleto);
         }
     )
     .catch(
@@ -102,3 +103,120 @@ appendFilePromesaLectura
             console.log('No se escribió el archivo ', resultadoError);
         }
     );
+*/
+
+/////////////////forEach
+/*
+[A,B,C]
+0-A.txt
+1-B.txt
+2-C.txt
+ */
+
+const promesaCreacionArchivo = (indice, string) => {
+    return new Promise(
+        (resolve, reject) => {
+            const archivo = `${indice}-${string}.txt`;
+            const contenido = string;
+            fs.writeFile(archivo,contenido,
+                (err,) => {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        const respuesta = {
+                          nombreArchivo: archivo,
+                          contenidoArchivo: contenido,
+                          error: err
+                        };
+
+                        resolve(respuesta);
+                    }
+                })
+        }
+    )
+};
+const arregloStrings = ['A', 'B', 'C'];
+const arregloFinal = [];
+
+arregloStrings.forEach(
+    (string, index) => {
+        promesaCreacionArchivo(index, string)
+            .then(
+                (respuesta) => {
+                    arregloFinal.push(respuesta);
+                }
+            )
+            .catch(
+                (error) => {
+                    console.log('Error', error);
+                }
+            );
+    }
+);
+
+/*
+const promesaRecorreArregloStrings = new Promise(
+  resolve => {
+      arregloStrings.forEach(
+          (string, indice) =>{
+              resolve(string,indice);
+          })
+  }
+);
+
+promesaRecorreArregloStrings
+    .then(
+        (string, indice) => {
+
+            return promesaCreacionArchivo(string,indice);
+        }
+    )
+    .catch(
+        (error) => {
+            console.log("Problema");
+        }
+    );
+*/
+
+
+
+
+
+/*
+promesaCreacionArchivo(0,'A')
+    .then(
+        (respuesta) => {
+            arregloFinal.push(respuesta);
+        }
+    )
+    .catch(
+        (error) => {
+            console.log('Error', error);
+        }
+    );
+
+promesaCreacionArchivo(1,'B')
+    .then(
+        (respuesta) => {
+            arregloFinal.push(respuesta);
+        }
+    )
+    .catch(
+        (error) => {
+            console.log('Error', error);
+        }
+    );
+
+promesaCreacionArchivo(2,'C')
+    .then(
+        (respuesta) => {
+            arregloFinal.push(respuesta);
+        }
+    )
+    .catch(
+        (error) => {
+            console.log('Error', error);
+        }
+    );
+*/
+
