@@ -52,3 +52,5 @@ async function ejecutarCodigoSyncrono() {
 }
 
 ejecutarCodigoSyncrono();
+
+//coment
