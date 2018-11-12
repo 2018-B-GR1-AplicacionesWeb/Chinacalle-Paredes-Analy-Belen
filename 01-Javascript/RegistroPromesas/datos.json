@@ -1,0 +1,24 @@
+{
+  "ListaCanciones": [
+    {
+      "nombre": "nombre1",
+      "autor": "autor1",
+      "anio": "anio1"
+    },
+    {
+      "nombre": "nombre4",
+      "autor": "autor4",
+      "anio": 2014
+    },
+    {
+      "nombre": "cancion1",
+      "autor": "autor1",
+      "anio": "anio1"
+    },
+    {
+      "nombre": "cancion2",
+      "autor": "autor2",
+      "anio": "anio2"
+    }
+  ]
+}
