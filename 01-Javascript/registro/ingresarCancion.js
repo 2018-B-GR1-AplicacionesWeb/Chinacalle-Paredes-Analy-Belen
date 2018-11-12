@@ -34,6 +34,7 @@ function guardarEnArchivo(cancionNueva) {
         });
 }
 
+
 function imprimirCancionesDeArchivo() {
     fs.readFile(nombreArchivo,
         'utf-8',
@@ -60,6 +61,8 @@ function imprimirCancionesDeArchivo() {
             }
         });
 }
+
+
 function buscarCancionesDeArchivo(razon, llave) {
     fs.readFile(nombreArchivo,
         'utf-8',
