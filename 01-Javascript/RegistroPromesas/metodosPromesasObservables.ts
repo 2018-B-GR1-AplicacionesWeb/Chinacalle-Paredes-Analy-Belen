@@ -1,32 +1,42 @@
+
 const cancion = {
     "nombre": "",
     "autor": "",
     "anio": ""
 };
 
+// @ts-ignore
+var require: any;
+
 const fs = require('fs');
 const nombreArchivo = 'datos.json';
+const rxjs = require('rxjs');
+const map = require('rxjs/operators').map;
+const disctinct = require('rxjs/operators').distinct;
 
+
+// @ts-ignore
 const leerArchivoPromesa = new Promise(
-        (resolve)=> {
-            fs.readFile(nombreArchivo, 'utf-8',
-                (err, contenidoArchivo) => {
-                    if (err) {
-                        resolve('{"ListaCanciones":[]}');   //{"ListaCanciones": []}
-                    } else {
-                        resolve(contenidoArchivo);
-                    }
-                });
-        }
+    (resolve)=> {
+        fs.readFile(nombreArchivo, 'utf-8',
+            (err, contenidoArchivo) => {
+                if (err) {
+                    resolve('{"ListaCanciones":[]}');
+                } else {
+                    resolve(contenidoArchivo);
+                }
+            });
+    }
 );
 
 const escribirArchivoPromesa = function (contenidoLeido, cancionNueva) {
+    // @ts-ignore
     return new Promise(
         ((resolve, reject) => {
             let contenido = '';
             if(contenidoLeido){
                 const obj = JSON.parse(contenidoLeido);
-                //if(obj['ListaCanciones'])
+
                 obj['ListaCanciones'].push(cancionNueva);
                 contenido = JSON.stringify(obj,null, 2);
             }
@@ -35,7 +45,6 @@ const escribirArchivoPromesa = function (contenidoLeido, cancionNueva) {
                     '{"ListaCanciones": ['+cancionNueva+']}';
 
             }
-
             fs.writeFile(nombreArchivo, contenido,
                 (err,) => {
                     if (err){
@@ -49,6 +58,7 @@ const escribirArchivoPromesa = function (contenidoLeido, cancionNueva) {
 };
 
 const imprimirConPromesa = function (contenidoArchivo) {
+    // @ts-ignore
     return new Promise(
         (resolve, reject) => {
             let canciones = "";
@@ -66,16 +76,14 @@ const imprimirConPromesa = function (contenidoArchivo) {
     );
 };
 const buscarCancionConPromesa = function(contenidoArchivo, razon, llave){
+    // @ts-ignore
     return new Promise(
         (resolve, reject) => {
             const obj = JSON.parse(contenidoArchivo);
             let respuesta;
             if (razon === "Nombre"){
                 for (let i = 0; i <obj['ListaCanciones'].length; i++){
-                    //const str = JSON.stringify(obj['ListaCanciones'][i].nombre);
                     const str = (obj['ListaCanciones'][i].nombre);
-                    console.log("obj: ",str, " tipo: ",typeof str);
-                    console.log("llave: ",llave, "tipo: ", typeof llave);
                     if(str === llave){
                         respuesta = JSON.stringify(obj['ListaCanciones'][i]);
                         break;
@@ -91,10 +99,9 @@ const buscarCancionConPromesa = function(contenidoArchivo, razon, llave){
                 }
             }
             if(respuesta) {
-                console.log('Encontrado: ', respuesta);
                 resolve(respuesta);
             } else {
-                console.log('No existe: ', respuesta);
+                console.log('No existe');
                 reject();
             }
         }
@@ -102,6 +109,7 @@ const buscarCancionConPromesa = function(contenidoArchivo, razon, llave){
 };
 
 
+var module: any;
 
 module.exports = {
     guardarCancion: (nombreCancion, autorCancion, anio) => {
@@ -125,13 +133,38 @@ module.exports = {
         leerArchivoPromesa
             .then(
                 (contenidoArchivo) => {
-                    console.log(contenidoArchivo);
-                    return imprimirConPromesa(contenidoArchivo);
+                    const obj = (contenidoArchivo);
+                    //const obj2 = (obj['ListaCanciones']);
+                    const datos = rxjs.of(obj);
+                    const observable$ = (datos);
+                    observable$
+                        .pipe(
+                            disctinct(),
+                            map(
+                                (valor) => {
+                                    console.log('Valor', valor);
+                                    return {
+                                        data:JSON.parse(valor)
+                                    };
+                                }
+                            )
+                        )
+                        .subscribe(
+                            (ok) => {
+                                console.log('Fin');
+                            },
+                            (error) => {
+                                console.log(error);
+                            },
+                            () => {
+                                console.log('Completado');
+                            }
+                        );
                 }
             )
             .catch(
                 (resultadoError) => {
-                    console.log('Algo malo paso imprimiendo', resultadoError);
+                    console.log('Algo malo paso', resultadoError);
                 }
             );
     },
@@ -144,7 +177,7 @@ module.exports = {
             )
             .catch(
                 (resultadoError) => {
-                    console.log('Algo malo paso Buscando por Nombre', resultadoError);
+                    console.log('Algo malo paso', resultadoError);
                 }
             );
     },
@@ -158,25 +191,78 @@ module.exports = {
             )
             .catch(
                 (resultadoError) => {
-                    console.log('Algo malo paso Buscando por autor', resultadoError);
+                    console.log('Algo malo paso', resultadoError);
                 }
             );
     },
-    eliminarCancion: (nombreCancion, nuevoNombre) => {
+    eliminarCancion: (nombreCancion) => {
         leerArchivoPromesa
             .then(
                 (contenidoArchivo) => {
-                    buscarCancionConPromesa(contenidoArchivo,"Nombre", nombreCancion)
-                        .then(
-                            (cancionBuscada) => {
-                                cancionBuscada.nombre = nuevoNombre;
-                                return escribirArchivoPromesa(contenidoArchivo,cancionBuscada)
-                            }
-                        )
-
+                    const cancion = buscarCancionConPromesa(contenidoArchivo,"Nombre", nombreCancion);
+                    console.log(typeof cancion);
+                    console.log(cancion);
                 }
             )
     }
 };
 
+
+/////APLICACION ////
+
+const app = require('./metodosPromesasObservables');
+//app.imprimirListaCanciones();
+interface Cancion {
+    nombre: string,
+    autor: string,
+    anio: string
+}
+
+const menu = "Menu de Canciones" +
+    "\n1. Ingresar cancion" +
+    "\n2. Buscar cancion por Nombre" +
+    "\n3. Buscar cancion por Autor" +
+    "\n4. Eliminar cancion" +
+    "\n5. Actualizar cancion" +
+    "\n6. Imprimir lista de canciones" +
+    "\n7. Salir";
+console.log(menu);
+
+var opc: number = 7;
+
+console.log('Opcion seleccionada: ',opc);
+while(opc!=7){
+    switch (opc) {
+        case 1:
+            const objCancion: Cancion = {
+                nombre: prompt('Nombre de la cancion:', ''),
+                autor: prompt('Autor de la cancion:', ''),
+                anio: prompt('Año de la cancion:', '')
+            };
+            app.guardarCancion(objCancion.nombre, objCancion.autor, objCancion.anio);
+            break;
+        case 2:
+            const nombre = prompt("Ingrese el nombre de la cancion: ");
+            app.buscarCancionPorNombre(nombre);
+            break;
+        case 3:
+            const autor = prompt("Ingrese el autor de la cancion: ");
+            app.buscarCancionPorAutor(autor);
+            break;
+        case 4:
+            const nombreCancion = prompt("Ingrese el nombre de la cancion: ");
+            app.eliminarCancion(nombreCancion);
+            break;
+        case 5:
+            //actualizar
+            break;
+        case 6:
+            app.imprimirListaCanciones();
+            break;
+    }
+    console.log(menu);
+
+    console.log('Opcion seleccionada: ',opc);
+
+}
 

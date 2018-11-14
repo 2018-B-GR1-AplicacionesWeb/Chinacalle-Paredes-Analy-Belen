@@ -40,7 +40,8 @@ const promesita = ()=> {
     )
 };
 
-async function ejecutarCodigoSyncrono() {
+// @ts-ignore
+const ejecutarCodigoSyncrono = async() =>  {
     console.log('Inicio');
     try {
         const resultadoPromesita = await promesita();
@@ -49,7 +50,7 @@ async function ejecutarCodigoSyncrono() {
         console.log('Error ', e);
     }
     console.log('Fin');
-}
+};
 
 ejecutarCodigoSyncrono();
 

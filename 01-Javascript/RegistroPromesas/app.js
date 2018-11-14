@@ -1,4 +1,7 @@
 const app = require('./metodos');
 
-app.guardarCancion('cancion2','autor2','anio2');
-console.log(app.imprimirListaCanciones());
+//app.guardarCancion("cancion5","autor5","anio5");
+app.imprimirListaCanciones();
+//(app.buscarCancionPorNombre("cancion1"));
+app.eliminarCancion("cancion5");
+
