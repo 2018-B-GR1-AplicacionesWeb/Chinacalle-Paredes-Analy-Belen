@@ -10,7 +10,7 @@ import {
     Headers, UnauthorizedException, Req, Res
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import {async} from "rxjs/internal/scheduler/async";
+//import {async} from "rxjs/internal/scheduler/async";
 import {Observable, of} from "rxjs";
 import {Request} from "express-serve-static-core";
 import {Response} from "express";
@@ -27,7 +27,7 @@ export class AppController {
       @Query('nombre') nombre: string, //analy
   ): string {
       console.log(todosQueryParams);
-    return 'Hola Metrocida'+nombre;
+    return 'Hola Metrocida '+nombre;
   }
   @Get('segmentoUno/segmentoDos/:idUsuario')    //Parametro ruta
   parametroRuta(
@@ -82,8 +82,8 @@ export class AppController {
 
     @Get('adiosMundoObservable')
     adiosMundoObservable(): Observable<string>{
-      const respuesta$ = of('adios Mundo');
-      return respuesta$;
+      const respuesta2$ = of('adios Mundo');
+      return respuesta2$;
     }
 
     @Post('crearUsuario')
@@ -126,3 +126,24 @@ export interface Usuario {
     nombre: string;
     //
 }
+
+/////////////////////       CONSULTA
+/*
+import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+
+@Component({
+    selector: '',
+    templateUrl: './abc.html',
+    styleUrls: ['./abc.less']
+})
+export class AbcComponent implements OnInit {
+    constructor(private route: ActivatedRoute) { }
+
+    ngOnInit() {
+        // get param
+        let param1 = this.route.snapshot.queryParams["param1"];
+    }
+}
+
+*/
