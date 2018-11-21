@@ -5,6 +5,7 @@ import {Usuario} from "./app.controller";
 export class AppService {
   /*root(): string {
     return 'Hello World!';
+    //algoooo
   }
   */
     bdd: Usuario[] = []; // reemplazar por archivo JSON
