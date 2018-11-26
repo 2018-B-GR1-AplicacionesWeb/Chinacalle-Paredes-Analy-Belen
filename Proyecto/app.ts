@@ -100,7 +100,10 @@ function main(){
                                     map(
                                         (nombre) => {
                                             respuesta.cancion.nombre= nombre;
-                                            return respuesta
+                                            const existeCancion = await buscarCancionNombre(respuesta.cancion.nombre);
+                                            if(existeCancion){
+                                                return existeCancion
+                                            }
                                         }
                                     )
                                 );
@@ -111,9 +114,10 @@ function main(){
 
                                 );
                         default:
-                            respuesta.usuario = {
-                                id: null,
-                                nombre: null
+                            respuesta.cancion = {
+                                nombre: null,
+                                autor: null,
+                                anio: null
                             };
                             rxjs.of(respuesta)
 
@@ -125,18 +129,33 @@ function main(){
                     console.log('respuesta en accion', respuesta);
                     switch (respuesta.respuestaCancion.opcionMenu) {
                         case 'Crear':
-                            const cancion = respuesta.cancion;
-                            respuesta.respuestaBDD.bdd.canciones.push(cancion)
+                            const cancionNueva = respuesta.cancion;
+                            respuesta.respuestaBDD.bdd.canciones.push(cancionNueva)
                             return respuesta;
                         case 'Buscar':
-                            const cancion = respuesta.cancion;
-                            respuesta.respuestaBDD.bdd.canciones.push(cancion)
-                            return respuesta;
+                            const respuestaF = respuesta.cancion;
+                            return respuestaF;
 
                     }
                 }
 
+            ), // Guardar Base de Datos
+            mergeMap(
+                (respuesta: RespuestaCancion) => {
+                    return guardarBase(respuesta.respuestaBDD.bdd);
+                }
             )
+        )
+        .subscribe(
+            (mensaje) => {
+                console.log(mensaje);
+            },
+            (error) => {
+                console.log(error);
+            }, () => {
+                console.log('Completado');
+                main();
+            }
         )
 }
 function Menu(){
@@ -223,9 +242,10 @@ function guardarBase(bdd: BaseDeDatos) {
     )
 }
 function buscarCancionNombre(nombre){
+    // @ts-ignore
     return new Promise(
         (resolve, reject) => {
-            fs.readFile('bdd.json', 'utf-8',
+            fs.readFile(nombreBD, 'utf-8',
                 (err, contenido) => {
                     if (err) {
 
@@ -243,7 +263,6 @@ function buscarCancionNombre(nombre){
                     }
                 });
         }
-    );
     );
 }
 //
@@ -269,10 +288,12 @@ interface RespuestaCancion {
     respuestaBDD: RespuestaBDD
     cancion?: Cancion
 }
-
+/*
 const first = require('rxjs/operators').first
 const source = rxjs.from([1, 2, 3, 4, 5]);
 //no value will pass, emit default
 const example = source.pipe(first(val => val === 5, 'Nothing'));
 //output: 'Nothing'
 const subscribe = example.subscribe(val => console.log(val));
+*/
+main()

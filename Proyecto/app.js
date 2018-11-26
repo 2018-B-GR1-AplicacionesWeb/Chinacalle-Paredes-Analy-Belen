@@ -62,7 +62,8 @@ function main() {
                 respuestaBD
             };
         }));
-    }), mergeMap((respuesta) => {
+    }), mergeMap(//preuntar y devolver observable
+    (respuesta) => {
         switch (respuesta.respuestaCancion.opcionMenu) {
             case 'Crear':
                 return rxjs
@@ -76,25 +77,58 @@ function main() {
                     .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
                     .pipe(map((nombre) => {
                     respuesta.cancion.nombre = nombre;
-                    return respuesta;
+                    async const existeCancion = await buscarCancionNombre(respuesta.cancion.nombre);
+                    if (existeCancion) {
+                        return existeCancion;
+                    }
                 }));
             case 'Actualizar':
                 return rxjs
                     .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
-                    .pipe(find());
+                    .pipe();
+            default:
+                respuesta.cancion = {
+                    nombre: null,
+                    autor: null,
+                    anio: null
+                };
+                rxjs.of(respuesta);
         }
-    }));
+    }), map(//dependiendo de la opcion seleccionada y los datos Actuar!! no devuelve observable
+    (respuesta) => {
+        console.log('respuesta en accion', respuesta);
+        switch (respuesta.respuestaCancion.opcionMenu) {
+            case 'Crear':
+                const cancionNueva = respuesta.cancion;
+                respuesta.respuestaBDD.bdd.canciones.push(cancionNueva);
+                return respuesta;
+            case 'Buscar':
+                const respuestaF = respuesta.cancion;
+                return respuestaF;
+        }
+    }), // Guardar Base de Datos
+    mergeMap((respuesta) => {
+        return guardarBase(respuesta.respuestaBDD.bdd);
+    }))
+        .subscribe((mensaje) => {
+        console.log(mensaje);
+    }, (error) => {
+        console.log(error);
+    }, () => {
+        console.log('Completado');
+        main();
+    });
 }
 function Menu() {
     return rxjs.of(inquirer.prompt(preguntaMenu));
 }
 //
+const nombreBD = 'canciones.json';
 function inicializarBase() {
     const leerBDD$ = rxjs.from(leerBDPromesa());
     return leerBDD$
         .pipe(mergeMap((respuestaLeerBDD) => {
         if (respuestaLeerBDD.bdd) {
-            // truty / {}
             return rxjs.of(respuestaLeerBDD);
         }
         else {
@@ -143,11 +177,30 @@ function guardarBase(bdd) {
         });
     });
 }
-function buscarCancionNombre() {
+function buscarCancionNombre(nombre) {
+    // @ts-ignore
+    return new Promise((resolve, reject) => {
+        fs.readFile(nombreBD, 'utf-8', (err, contenido) => {
+            if (err) {
+                reject({ mensaje: 'Error leyendo' });
+            }
+            else {
+                const bdd = JSON.parse(contenido);
+                const respuestaFind = bdd.canciones
+                    .find((cancion) => {
+                    return cancion.nombre === nombre;
+                });
+                resolve(respuestaFind);
+            }
+        });
+    });
 }
-const first = require('rxjs/operators').first;
+/*
+const first = require('rxjs/operators').first
 const source = rxjs.from([1, 2, 3, 4, 5]);
 //no value will pass, emit default
-const example = source.pipe(first(val => val===  5, 'Nothing'));
+const example = source.pipe(first(val => val === 5, 'Nothing'));
 //output: 'Nothing'
 const subscribe = example.subscribe(val => console.log(val));
+*/
+main();
