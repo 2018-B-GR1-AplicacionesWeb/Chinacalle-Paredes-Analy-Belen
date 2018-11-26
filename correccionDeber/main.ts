@@ -1,5 +1,4 @@
-declare var Promise;
-
+//declare var require: any;
 const inquirer = require('inquirer');
 const fs = require('fs');
 const rxjs = require('rxjs');
@@ -48,128 +47,128 @@ const preguntaUsuarioNuevoNombre = [
     }
 ];
 
-//async function main() {
 function main() {
     console.log('Empezo');
-    try {
-        //await inicializarBase();
-        inicializarBase()
-            .pipe(
-                mergeMap(
-                    (respuestaBDD: RespuestaBDD)=>{
-                        return preguntaMenu()
-                            .pipe(
-                                map(
-                                    (respuesta: OpcionesPregunta)=> {
-                                        return {
-                                            respuestaUsuario: respuesta,
-                                            respuestaBDD
-                                        }
+
+    inicializarBase()
+        .pipe(
+            mergeMap( // preguntar opcion
+                (respuestaBDD: RespuestaBDD) => {
+                    return preguntarMenu()
+                        .pipe(
+                            map(
+                                (respuesta: OpcionesPregunta) => {
+                                    return {
+                                        respuestaUsuario: respuesta,
+                                        respuestaBDD
                                     }
-                                )
-                            ),
-                            mergeMap(
-                                (respuesta: RespuestaUsuario) => {
-                                    switch (respuesta.respuestaUsuario.opcionMenu) {
-                                        case 'Crear':
-                                            return rxjs
-                                                .from(inquirer.prompt(preguntaUsuario))
-                                                .pipe(
-                                                    map(
-                                                        (usuario)=>{
-                                                            respuesta.usuario = usuario;
-                                                            return respuesta
-                                                        }
-                                                    )
-                                                )
-                                        default:
-                                            respuesta.usuario={
-                                                id:null,
-                                                nombre:null
-                                            };
-                                            rxjs.of(respuesta)
-                                    }
+
                                 }
                             )
+                        )
+                }
+            ), // dependiendo de la opcion PREGUNTAMOS DEPENDIENDO LAS OPCIONES
+            mergeMap(
+                (respuesta: RespuestaUsuario) => {
+                    console.log(respuesta);
+                    switch (respuesta.respuestaUsuario.opcionMenu) {
+                        case 'Crear':
+                            return rxjs
+                                .from(inquirer.prompt(preguntaUsuario))
+                                .pipe(
+                                    map(
+                                        (usuario) => {
+                                            respuesta.usuario = usuario;
+                                            return respuesta
+                                        }
+                                    )
+                                );
+
+                        default:
+                            respuesta.usuario = {
+                                id: null,
+                                nombre: null
+                            };
+                            rxjs.of(respuesta)
+
                     }
-                ),
-                map(
-                    (respuesta: RespuestaUsuario)=>{
-                        switch (respuesta.respuestaUsuario.opcionMenu) {
-                            case 'Crear':
-                                const usuario = respuesta.usuario;
-                                respuesta.respuestaBDD.bdd.usuarios.push(usuario)
-                        }
+                }
+            ), // Ejecutar Accion
+            map(
+                (respuesta: RespuestaUsuario) => {
+                    console.log('respuesta en accion', respuesta);
+                    switch (respuesta.respuestaUsuario.opcionMenu) {
+                        case 'Crear':
+                            const usuario = respuesta.usuario;
+                            respuesta.respuestaBDD.bdd.usuarios.push(usuario)
+                            return respuesta;
+
                     }
-                ),
-                mergeMap(
-                    (respuesta: RespuestaUsuario) => {
-                        return guardarBase(respuesta.respuestaBDD.bdd);
-                    }
-                )
-            )
-            .subscribe(
-                (mensaje)=>{
-                    console.log(mensaje);
-                },
-                (error)=>{
-                    console.log(error)
-                },
-                ()=>{
-                    console.log('Complrtado');
-                    main()
+                }
+            ), // Guardar Base de Datos
+            mergeMap(
+                (respuesta: RespuestaUsuario) => {
+                    return guardarBase(respuesta.respuestaBDD.bdd);
                 }
             )
-        /*
-        const respuesta = await inquirer.prompt(preguntaMenu);
-        switch (respuesta.opcionMenu) {
-            case 'Crear':
+        )
+        .subscribe(
+            (mensaje) => {
+                console.log(mensaje);
+            },
+            (error) => {
+                console.log(error);
+            }, () => {
+                console.log('Completado');
+                main();
+            }
+        )
 
-                const respuestaUsuario = await inquirer.prompt(preguntaUsuario);
-                await anadirUsuario(respuestaUsuario);
+
+    /*
+    const respuesta = await inquirer.prompt(preguntaMenu);
+    switch (respuesta.opcionMenu) {
+        case 'Crear':
+            const respuestaCancion = await inquirer.prompt(preguntaUsuario);
+            await anadirUsuario(respuestaCancion);
+            main();
+            break;
+        case 'Actualizar':
+            const respuestaUsuarioBusquedaPorNombre = await inquirer.prompt(preguntaUsuarioBusquedaPorNombre);
+            const existeUsuario = await buscarUsuarioPorNombre(respuestaUsuarioBusquedaPorNombre.nombre);
+            if (existeUsuario) {
+                const respuestaNuevoNombre = await inquirer.prompt(preguntaUsuarioNuevoNombre);
+                await editarUsuario(respuestaUsuarioBusquedaPorNombre.nombre, respuestaNuevoNombre.nombre);
+            } else {
+                console.log('El usuario no existe');
                 main();
                 break;
-
-            case 'Actualizar':
-
-                const respuestaUsuarioBusquedaPorNombre = await inquirer.prompt(preguntaUsuarioBusquedaPorNombre);
-
-                const existeUsuario = await buscarUsuarioPorNombre(respuestaUsuarioBusquedaPorNombre.nombre);
-
-                if (existeUsuario) {
-                    const respuestaNuevoNombre = await inquirer.prompt(preguntaUsuarioNuevoNombre);
-                    await editarUsuario(respuestaUsuarioBusquedaPorNombre.nombre, respuestaNuevoNombre.nombre);
-                } else {
-                    console.log('El usuario no existe');
-
-                    main();
-                    break;
-                }
-
-
-        }
-        */
-    } catch (e) {
-        console.log('Hubo un error');
+            }
     }
+    */
+
 }
 
 function inicializarBase() {
+
     const leerBDD$ = rxjs.from(leerBDD());
+
     return leerBDD$
         .pipe(
             mergeMap(
-                (respuestaLeerBD: RespuestaBDD)=> {
-                    if(respuestaLeerBD.bdd){
-                        //truty
-                        return rxjs.of(respuestaLeerBD)
-                    }else{
-                        //falsy
+                (respuestaLeerBDD: RespuestaBDD) => {
+                    if (respuestaLeerBDD.bdd) {
+                        // truty / {}
+                        return rxjs.of(respuestaLeerBDD)
+                    } else {
+                        // falsy / null
                         return rxjs.from(crearBDD())
                     }
                 }
             )
         );
+
+
     /*
     return new Promise(
         (resolve, reject) => {
@@ -184,9 +183,6 @@ function inicializarBase() {
                                 }
                                 resolve({mensaje: 'ok'});
                             });
-
-
-
                     } else {
                         resolve({mensaje: 'ok'});
                     }
@@ -195,58 +191,94 @@ function inicializarBase() {
     );
     */
 }
-function preguntarMenu(){
-    return rxjs.from()
+
+
+function preguntarMenu() {
+    return rxjs.from(inquirer.prompt(preguntaMenu))
 }
-function leerBDD():Promise<BaseDeDatos>{ //Devuelve promesa de tipo Base de Datos
+
+
+function leerBDD(){
+    // @ts-ignore
     return new Promise(
         (resolve) => {
             fs.readFile(
-                'bdd.json', 'utf-8',
+                'bdd.json',
+                'utf-8',
                 (error, contenidoLeido) => {
-                    if(error){
-                        resolve({mensaje: 'BAse de datos vacía', bdd: null});
-                    } else{
-                        resolve({mensaje: 'Si existe la base', bdd: JSON.parse(contenidoLeido)});
+                    if (error) {
+                        resolve({
+                            mensaje: 'Base de datos vacia',
+                            bdd: null
+                        });
+                    } else {
+                        resolve({
+                            mensaje: 'Si existe la Base',
+                            bdd: JSON.parse(contenidoLeido)
+                        });
                     }
+
                 }
-            )
+            );
         }
-    )
+    );
 }
+
 function crearBDD() {
-    const contenidoInicialBDD = '{"usuarios":[]}';
+    const contenidoInicialBDD = '{"usuarios":[],"mascotas":[]}';
+    // @ts-ignore
     return new Promise(
         (resolve, reject) => {
             fs.writeFile(
                 'bdd.json',
                 contenidoInicialBDD,
                 (err) => {
-                    if(err) {
+                    if (err) {
                         reject({
-                            mensaje: 'Error creando base',
+                            mensaje: 'Error creando Base',
                             error: 500
-                        })
-                    }else {
+                        });
+                    } else {
                         resolve({
-                            mensaje: 'BDD creada'
+                            mensaje: 'BDD creada',
+                            bdd: JSON.parse('{"usuarios":[],"mascotas":[]}')
                         });
                     }
+
                 }
             )
+
         }
     )
 }
 
 function guardarBase(bdd: BaseDeDatos) {
+    // @ts-ignore
     return new Promise(
-        (resolve, reject)=> {
-
+        (resolve, reject) => {
+            fs.writeFile(
+                'bdd.json',
+                JSON.stringify(bdd),
+                (err) => {
+                    if (err) {
+                        reject({
+                            mensaje: 'Error guardando BDD',
+                            error: 500
+                        })
+                    } else {
+                        resolve({
+                            mensaje: 'BDD guardada'
+                        })
+                    }
+                }
+            )
         }
-    )
+    );
 }
 
+
 function anadirUsuario(usuario) {
+    // @ts-ignore
     return new Promise(
         (resolve, reject) => {
             fs.readFile('bdd.json', 'utf-8',
@@ -278,6 +310,7 @@ function anadirUsuario(usuario) {
 }
 
 function editarUsuario(nombre, nuevoNombre) {
+    // @ts-ignore
     return new Promise(
         (resolve, reject) => {
             fs.readFile('bdd.json', 'utf-8',
@@ -316,6 +349,7 @@ function editarUsuario(nombre, nuevoNombre) {
 }
 
 function buscarUsuarioPorNombre(nombre) {
+    // @ts-ignore
     return new Promise(
         (resolve, reject) => {
             fs.readFile('bdd.json', 'utf-8',
@@ -341,30 +375,34 @@ function buscarUsuarioPorNombre(nombre) {
 
 main();
 
+
 interface RespuestaBDD {
     mensaje: string,
     bdd: BaseDeDatos
 }
 
 interface BaseDeDatos {
-    usuarios: any[];
-    mascotas: any[];
+    usuarios: Usuario[];
+    mascotas: Mascota[];
 }
+
 interface Usuario {
     id: number;
     nombre: string;
 }
+
 interface Mascota {
     id: number;
     nombre: string;
     idUsuario: number;
 }
-interface OpcionesPregunta{
-    opcionMenu:'Crear'| 'Borrar'|'Buscar'| 'Actualizar'
+
+interface OpcionesPregunta {
+    opcionMenu: 'Crear' | 'Borrar' | 'Buscar' | 'Actualizar'
 }
 
 interface RespuestaUsuario {
     respuestaUsuario: OpcionesPregunta,
-    respuestaBDD: RespuestaBDD,
+    respuestaBDD: RespuestaBDD
     usuario?: Usuario
 }
