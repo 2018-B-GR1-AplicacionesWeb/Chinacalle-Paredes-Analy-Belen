@@ -100,7 +100,7 @@ function main() {
                     switch (respuesta.respuestaUsuario.opcionMenu) {
                         case 'Crear':
                             const usuario = respuesta.usuario;
-                            respuesta.respuestaBDD.bdd.usuarios.push(usuario)
+                            respuesta.respuestaBDD.bdd.usuarios.push(usuario);
                             return respuesta;
 
                     }
@@ -123,30 +123,6 @@ function main() {
                 main();
             }
         )
-
-
-    /*
-    const respuesta = await inquirer.prompt(preguntaMenu);
-    switch (respuesta.opcionMenu) {
-        case 'Crear':
-            const respuestaCancion = await inquirer.prompt(preguntaUsuario);
-            await anadirUsuario(respuestaCancion);
-            main();
-            break;
-        case 'Actualizar':
-            const respuestaUsuarioBusquedaPorNombre = await inquirer.prompt(preguntaUsuarioBusquedaPorNombre);
-            const existeUsuario = await buscarUsuarioPorNombre(respuestaUsuarioBusquedaPorNombre.nombre);
-            if (existeUsuario) {
-                const respuestaNuevoNombre = await inquirer.prompt(preguntaUsuarioNuevoNombre);
-                await editarUsuario(respuestaUsuarioBusquedaPorNombre.nombre, respuestaNuevoNombre.nombre);
-            } else {
-                console.log('El usuario no existe');
-                main();
-                break;
-            }
-    }
-    */
-
 }
 
 function inicializarBase() {
@@ -167,29 +143,6 @@ function inicializarBase() {
                 }
             )
         );
-
-
-    /*
-    return new Promise(
-        (resolve, reject) => {
-            fs.readFile('bdd.json', 'utf-8',
-                (err, contenido) => {
-                    if (err) {
-                        fs.writeFile('bdd.json',
-                            '{"usuarios":[],"mascotas":[]}',
-                            (err) => {
-                                if (err) {
-                                    reject({mensaje: 'Error'});
-                                }
-                                resolve({mensaje: 'ok'});
-                            });
-                    } else {
-                        resolve({mensaje: 'ok'});
-                    }
-                });
-        }
-    );
-    */
 }
 
 

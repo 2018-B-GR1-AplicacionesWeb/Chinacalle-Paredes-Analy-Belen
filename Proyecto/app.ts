@@ -10,7 +10,7 @@ const find = require('rxjs/operators').find;
 const preguntaMenu = {
     type: 'list',
     name: 'opcionMenu',
-    message: 'Que quieres hacer',
+    message: 'Que quieres hacer??',
     choices: [
         'Crear',
         'Borrar',
@@ -58,6 +58,11 @@ const preguntaActualizarCancion = [
         name: 'autor',
         message: 'Escribe el nuevo autor de la cancion'
     },
+    {
+        type: 'input',
+        name: 'anio',
+        message: 'Escribe el nuevo Año de la cancion: '
+    },
 
 ];
 
@@ -65,14 +70,14 @@ function main(){
     inicializarBase()
         .pipe(
             mergeMap(
-                (respuestaBD: RespuestaBDD)=> {
+                (respuestaBDD: RespuestaBDD)=> {
                     return Menu()
                         .pipe(
                             map(
                                 (respuesta: OpcionesPregunta) => {
                                     return {
-                                        respuestaUsuario: respuesta,
-                                        respuestaBD
+                                        respuestaCancion: respuesta,
+                                        respuestaBDD
                                     }
                                 }
                             )
@@ -100,10 +105,8 @@ function main(){
                                     map(
                                         (nombre) => {
                                             respuesta.cancion.nombre= nombre;
-                                            const existeCancion = await buscarCancionNombre(respuesta.cancion.nombre);
-                                            if(existeCancion){
-                                                return existeCancion
-                                            }
+                                            return rxjs
+                                                .of(buscarCancionNombre(respuesta.cancion.nombre));
                                         }
                                     )
                                 );
@@ -111,7 +114,44 @@ function main(){
                             return rxjs
                                 .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
                                 .pipe(
+                                    map(
+                                        nombre => {
+                                            respuesta.cancion.nombre = nombre;
+                                            return rxjs
+                                                .from(actualizarCancion(nombre,inquirer.prompt(preguntaActualizarCancion)))
+                                                .pipe(
+                                                    map(
+                                                        (mensaje)=> {
+                                                            respuesta.respuestaBDD = mensaje;
+                                                            return respuesta
+                                                        }
+                                                    )
+                                                )
 
+                                        }
+                                    )
+                                );
+                        case 'Borrar':
+                            return rxjs
+                                .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
+                                .pipe(
+                                    map(
+                                        (nombre)=> {
+                                            respuesta.respuestaBDD = eliminarCancion(nombre);
+                                            return respuesta;
+                                        }
+                                    )
+                                );
+                        case 'Imprimir':
+                            return rxjs
+                                .of(leerBDPromesa())
+                                .pipe(
+                                  map(
+                                      (respuesta)=> {
+                                          respuesta.respuestaBDD = respuesta;
+                                          return respuesta;
+                                      }
+                                  )
                                 );
                         default:
                             respuesta.cancion = {
@@ -130,11 +170,27 @@ function main(){
                     switch (respuesta.respuestaCancion.opcionMenu) {
                         case 'Crear':
                             const cancionNueva = respuesta.cancion;
-                            respuesta.respuestaBDD.bdd.canciones.push(cancionNueva)
+                            respuesta.respuestaBDD.bdd.canciones.push(cancionNueva);
                             return respuesta;
                         case 'Buscar':
-                            const respuestaF = respuesta.cancion;
-                            return respuestaF;
+                            let respuestaF = respuesta.cancion;
+                            if (respuestaF){
+                                console.log(respuestaF);
+                            }else {
+                                console.log('No existe')
+                            }
+                            break;
+
+                        case 'Actualizar':
+                            return respuesta;
+
+                        case 'Borrar':
+                            return respuesta;
+
+                        case 'Imprimir':
+                            console.log(respuesta.respuestaBDD.bdd);
+                            break
+
 
                     }
                 }
@@ -159,7 +215,7 @@ function main(){
         )
 }
 function Menu(){
-    return rxjs.of(inquirer.prompt(preguntaMenu))
+    return rxjs.from(inquirer.prompt(preguntaMenu))
 }
 
 
@@ -187,18 +243,24 @@ function leerBDPromesa(){
     // @ts-ignore
     return new Promise(
         (resolve) => {
-            fs.writeFile(
+            fs.readFile(
                 nombreBD,
                 'utf-8',
                 (error, contenidoLeido) => {
-                    if(error){
-                        resolve({bdd:null})
+                    if (error) {
+                        resolve({
+                            mensaje: 'Base de datos vacia',
+                            bdd: null
+                        });
+                    } else {
+                        resolve({
+                            mensaje: 'Si existe la Base',
+                            bdd: JSON.parse(contenidoLeido)
+                        });
                     }
-                    else{
-                        resolve({bdd: JSON.parse(contenidoLeido)})
-                    }
+
                 }
-            )
+            );
         }
     );
 }
@@ -208,7 +270,7 @@ function crearBD() {
     // @ts-ignore
     return new Promise(
         (resolve,reject) => {
-            fs.readFile(
+            fs.writeFile(
                 nombreBD,
                 base,
                 (err) => {
@@ -265,22 +327,107 @@ function buscarCancionNombre(nombre){
         }
     );
 }
+
+function actualizarCancion(nombre, cancion){
+    // @ts-ignore
+    return new Promise(
+        (resolve, reject) => {
+            fs.readFile(
+                nombreBD,
+                'utf-8',
+                (error, contenidoLeido) => {
+                    if (error){
+                        reject('Error leyendo')
+                    }  else {
+                        const bdd = JSON.parse(contenidoLeido);
+                        const indiceCancion = bdd.canciones
+                            .findIndex(
+                                (cancion) => {
+                                    return cancion.nombre = nombre;
+                                }
+                            );
+
+                        bdd.canciones[indiceCancion] = cancion;
+
+                        fs.writeFile(
+                            nombreBD,
+                            JSON.stringify(bdd, null,2),
+                            (err) =>{
+                                if (err){
+                                    reject(err)
+                                } else{
+                                    resolve({
+                                        mensaje: 'Cancion actualizada',
+                                        bdd: JSON.parse(bdd)})
+                                }
+                            }
+
+                        )
+                    }
+                });
+        }
+    );
+}
+
+function eliminarCancion(nombre){
+    // @ts-ignore
+    return new Promise(
+        (resolve, reject) => {
+            fs.readFile(
+                nombreBD,
+                'utf-8',
+                (error, contenidoLeido) => {
+                    if (error){
+                        reject('Error leyendo')
+                    }  else {
+                        const bdd = JSON.parse(contenidoLeido);
+                        const indiceCancion = bdd.canciones
+                            .findIndex(
+                                (cancion) => {
+                                    return cancion.nombre = nombre;
+                                }
+                            );
+
+                        bdd.canciones
+                            .splice(indiceCancion, 1);
+
+                        fs.writeFile(
+                            nombreBD,
+                            JSON.stringify(bdd, null,2),
+                            (err) =>{
+                                if (err){
+                                    reject(err)
+                                } else{
+                                    resolve({
+                                        mensaje: 'Cancion eliminada',
+                                        bdd: JSON.parse(bdd)
+                                    })
+                                }
+                            }
+
+                        )
+                    }
+                });
+        }
+    );
+}
+
 //
 interface Cancion {
     nombre: string;
     autor: string;
-    anio: number;
+    anio: string;
 }
 
 interface BaseDeDatos {
-    canciones: [];
+    canciones: Cancion[];
 }
 interface RespuestaBDD {
     mensaje: string,
     bdd: BaseDeDatos
 }
 interface OpcionesPregunta {
-    opcionMenu: 'Crear' | 'Borrar' | 'Buscar' | 'Actualizar'
+    opcionMenu: 'Crear' | 'Borrar' | 'Buscar' | 'Actualizar' |'Imprimir'
 }
 
 interface RespuestaCancion {
@@ -296,4 +443,4 @@ const example = source.pipe(first(val => val === 5, 'Nothing'));
 //output: 'Nothing'
 const subscribe = example.subscribe(val => console.log(val));
 */
-main()
+main();

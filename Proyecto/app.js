@@ -7,7 +7,7 @@ const find = require('rxjs/operators').find;
 const preguntaMenu = {
     type: 'list',
     name: 'opcionMenu',
-    message: 'Que quieres hacer',
+    message: 'Que quieres hacer??',
     choices: [
         'Crear',
         'Borrar',
@@ -54,12 +54,12 @@ const preguntaActualizarCancion = [
 ];
 function main() {
     inicializarBase()
-        .pipe(mergeMap((respuestaBD) => {
+        .pipe(mergeMap((respuestaBDD) => {
         return Menu()
             .pipe(map((respuesta) => {
             return {
-                respuestaUsuario: respuesta,
-                respuestaBD
+                respuestaCancion: respuesta,
+                respuestaBDD
             };
         }));
     }), mergeMap(//preuntar y devolver observable
@@ -77,15 +77,20 @@ function main() {
                     .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
                     .pipe(map((nombre) => {
                     respuesta.cancion.nombre = nombre;
-                    async const existeCancion = await buscarCancionNombre(respuesta.cancion.nombre);
-                    if (existeCancion) {
-                        return existeCancion;
-                    }
+                    return rxjs
+                        .of(buscarCancionNombre(respuesta.cancion.nombre));
                 }));
             case 'Actualizar':
                 return rxjs
                     .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
-                    .pipe();
+                    .pipe(
+                        map(
+                            nombre => {
+                                respuesta.cancion.nombre = nombre;
+
+                            }
+                        )
+                    );
             default:
                 respuesta.cancion = {
                     nombre: null,
@@ -104,7 +109,12 @@ function main() {
                 return respuesta;
             case 'Buscar':
                 const respuestaF = respuesta.cancion;
-                return respuestaF;
+                if (respuestaF) {
+                    console.log(respuestaF);
+                }
+                else {
+                    return 'No existe';
+                }
         }
     }), // Guardar Base de Datos
     mergeMap((respuesta) => {
@@ -120,7 +130,7 @@ function main() {
     });
 }
 function Menu() {
-    return rxjs.of(inquirer.prompt(preguntaMenu));
+    return rxjs.from(inquirer.prompt(preguntaMenu));
 }
 //
 const nombreBD = 'canciones.json';
@@ -140,12 +150,18 @@ function inicializarBase() {
 function leerBDPromesa() {
     // @ts-ignore
     return new Promise((resolve) => {
-        fs.writeFile(nombreBD, 'utf-8', (error, contenidoLeido) => {
+        fs.readFile(nombreBD, 'utf-8', (error, contenidoLeido) => {
             if (error) {
-                resolve({ bdd: null });
+                resolve({
+                    mensaje: 'Base de datos vacia',
+                    bdd: null
+                });
             }
             else {
-                resolve({ bdd: JSON.parse(contenidoLeido) });
+                resolve({
+                    mensaje: 'Si existe la Base',
+                    bdd: JSON.parse(contenidoLeido)
+                });
             }
         });
     });
@@ -154,7 +170,7 @@ function crearBD() {
     const base = '{"canciones": []}';
     // @ts-ignore
     return new Promise((resolve, reject) => {
-        fs.readFile(nombreBD, base, (err) => {
+        fs.writeFile(nombreBD, base, (err) => {
             if (err) {
                 reject({ Mensaje: 'error creando Base', error: 500 });
             }

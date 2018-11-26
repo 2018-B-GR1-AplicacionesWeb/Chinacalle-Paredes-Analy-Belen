@@ -19,9 +19,9 @@ arreglo.pop();
 console.log(arreglo);
 
 var arregloNumeros = [1, 2, 3, 4, 5];
-arregloNumeros.splice(1, 0, 1.1); // Posición, ElemABorrar, elemA añadir
+//arregloNumeros.splice(1, 0, 1.1); // Posición, ElemABorrar, elemA añadir
 console.log(arregloNumeros);
-arregloNumeros.splice(4, 1);
+arregloNumeros.splice(2, 1);
 console.log(arregloNumeros);
 
 var indiceDelNumeroDos = arregloNumeros.indexOf(2);
