@@ -104,9 +104,8 @@ function main(){
                                 .pipe(
                                     map(
                                         (nombre) => {
-                                            respuesta.cancion.nombre= nombre;
-                                            return rxjs
-                                                .of(buscarCancionNombre(respuesta.cancion.nombre));
+                                            respuesta.cancion= nombre;
+                                            return respuesta
                                         }
                                     )
                                 );
@@ -136,9 +135,11 @@ function main(){
                                 .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
                                 .pipe(
                                     map(
-                                        (nombre)=> {
-                                            respuesta.respuestaBDD = eliminarCancion(nombre);
-                                            return respuesta;
+                                        (nombre) => {
+
+                                            respuesta.cancion= nombre;
+                                            console.log('borrar cancion: '+respuesta.cancion.nombre);
+                                            return respuesta
                                         }
                                     )
                                 );
@@ -146,12 +147,12 @@ function main(){
                             return rxjs
                                 .of(leerBDPromesa())
                                 .pipe(
-                                  map(
-                                      (respuesta)=> {
-                                          respuesta.respuestaBDD = respuesta;
-                                          return respuesta;
-                                      }
-                                  )
+                                    map(
+                                        (respuesta)=> {
+                                            respuesta.respuestaBDD = respuesta;
+                                            return respuesta;
+                                        }
+                                    )
                                 );
                         default:
                             respuesta.cancion = {
@@ -172,19 +173,45 @@ function main(){
                             const cancionNueva = respuesta.cancion;
                             respuesta.respuestaBDD.bdd.canciones.push(cancionNueva);
                             return respuesta;
-                        case 'Buscar':
-                            let respuestaF = respuesta.cancion;
-                            if (respuestaF){
-                                console.log(respuestaF);
-                            }else {
-                                console.log('No existe')
-                            }
-                            break;
 
                         case 'Actualizar':
                             return respuesta;
 
                         case 'Borrar':
+                            const contenido = JSON.stringify(respuesta.respuestaBDD.bdd);
+                            const bdd = JSON.parse(contenido);
+                            const indiceCancion = bdd.canciones
+                                .findIndex(
+                                    (cancion) => {
+
+                                        return cancion.nombre === respuesta.cancion.nombre;
+                                    }
+                                );
+                            console.log('indice' +indiceCancion);
+                            bdd.canciones
+                                .splice(indiceCancion, 1);
+                            respuesta.respuestaBDD.mensaje= 'Cancion eliminada';
+                            respuesta.respuestaBDD.bdd= bdd;
+
+
+                            return respuesta;
+
+                        case 'Buscar':
+                            const base = JSON.parse(JSON.stringify(respuesta.respuestaBDD.bdd));
+                            const respuestaFind = base.canciones
+                                .find(
+                                    (cancion: Cancion) => {
+                                        return cancion.nombre === respuesta.cancion.nombre;
+                                    }
+                                );
+
+                            if (respuestaFind){
+                                console.log('Canción encontrada: '+respuestaFind);
+                            }else {
+                                console.log(' Canción no existe')
+                            }
+                            respuesta.respuestaBDD.mensaje= 'Busqueda';
+
                             return respuesta;
 
                         case 'Imprimir':
@@ -296,7 +323,7 @@ function guardarBase(bdd: BaseDeDatos) {
                     if(error){
                         reject({Mensaje: 'error guardando', error: 500});
                     } else {
-                        resolve({Mensaje: 'Base uardada'});
+                        resolve({Mensaje: 'Base guardada'});
                     }
                 }
             )
@@ -388,10 +415,18 @@ function eliminarCancion(nombre){
                                 }
                             );
 
-                        bdd.canciones
-                            .splice(indiceCancion, 1);
+                        if (indiceCancion){
+                            bdd.canciones
+                                .splice(indiceCancion, 1);
+                            resolve({
+                                mensaje: 'Cancion eliminada',
+                                bdd: bdd
+                            })
+                        } else {
+                            reject()
+                        }
 
-                        fs.writeFile(
+                        /*fs.writeFile(
                             nombreBD,
                             JSON.stringify(bdd, null,2),
                             (err) =>{
@@ -400,12 +435,12 @@ function eliminarCancion(nombre){
                                 } else{
                                     resolve({
                                         mensaje: 'Cancion eliminada',
-                                        bdd: JSON.parse(bdd)
+                                        bdd: bdd
                                     })
                                 }
                             }
 
-                        )
+                        )*/
                     }
                 });
         }
