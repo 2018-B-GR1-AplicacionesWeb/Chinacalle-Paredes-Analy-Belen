@@ -206,7 +206,7 @@ function main(){
                                 );
 
                             if (respuestaFind){
-                                console.log('Canción encontrada: '+respuestaFind);
+                                console.log('Canción encontrada: '+JSON.stringify(respuestaFind,null,2));
                             }else {
                                 console.log(' Canción no existe')
                             }
@@ -215,7 +215,7 @@ function main(){
                             return respuesta;
 
                         case 'Imprimir':
-                            console.log(respuesta.respuestaBDD.bdd);
+                            console.log(JSON.stringify(respuesta.respuestaBDD.bdd,null,2));
                             break
 
 

@@ -1,10 +1,269 @@
 
+
 const fs = require('fs');
+const inquirer = require('inquirer');
 const rxjs = require('rxjs');
 const mergeMap = require('rxjs/operators').mergeMap;
-const nombreBD= 'canciones.json';
+const map = require('rxjs/operators').map;
+const find = require('rxjs/operators').find;
+const filter = require('rxjs/operators').filter;
 
-export function inicializarBase() {
+const preguntaMenu = {
+    type: 'list',
+    name: 'opcionMenu',
+    message: 'Que quieres hacer??',
+    choices: [
+        'Crear',
+        'Borrar',
+        'Buscar',
+        'Actualizar',
+        'Imprimir',
+    ]
+};
+
+const preguntaNuevaCancion = [
+    {
+        type: 'input',
+        name: 'nombre',
+        message: 'Nombre de la cancion: '
+    },
+    {
+        type: 'input',
+        name: 'autor',
+        message: 'Autor de la cancion: '
+    },
+    {
+        type: 'input',
+        name: 'anio',
+        message: 'Año de la cancion: '
+    },
+];
+
+const preguntaCancionBusquedaPorNombre = [
+    {
+        type: 'input',
+        name: 'nombre',
+        message: 'Escribe el nombre de la cancion a buscar'
+    }
+];
+
+
+const preguntaActualizarCancion = [
+    {
+        type: 'input',
+        name: 'actualizar',
+        message: 'Escribe el nombre de la cancion a actualizar'
+    },
+    {
+        type: prev => prev != '' ? 'input':null,
+        name: 'nombre',
+        message: 'Escribe el nuevo nombre de la cancion'
+    },
+    {
+        type: prev => prev != ''? 'input':null,
+        name: 'autor',
+        message: 'Escribe el nuevo autor de la cancion'
+    },
+    {
+        type: 'input',
+        name: 'anio',
+        message: 'Escribe el nuevo Año de la cancion: '
+    },
+
+];
+
+function main(){
+    inicializarBase()
+        .pipe(
+            mergeMap(
+                (respuestaBDD: RespuestaBDD)=> {
+                    return Menu()
+                        .pipe(
+                            map(
+                                (respuesta: OpcionesPregunta) => {
+                                    return {
+                                        respuestaCancion: respuesta,
+                                        respuestaBDD
+                                    }
+                                }
+                            )
+                        )
+                }
+            ),
+            mergeMap( //preuntar y devolver observable
+                (respuesta: RespuestaCancion) => {
+                    switch (respuesta.respuestaCancion.opcionMenu) {
+                        case 'Crear':
+                            return rxjs
+                                .from(inquirer.prompt(preguntaNuevaCancion))
+                                .pipe(
+                                    map(
+                                        (cancion) => {
+                                            respuesta.cancion = cancion;
+                                            return respuesta
+                                        }
+                                    )
+                                );
+                        case 'Buscar':
+                            return rxjs
+                                .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
+                                .pipe(
+                                    map(
+                                        (nombre) => {
+                                            respuesta.cancion= nombre;
+                                            return respuesta
+                                        }
+                                    )
+                                );
+                        case 'Actualizar':
+                            return rxjs
+                                .from(inquirer.prompt(preguntaActualizarCancion))
+                                .pipe(
+                                    map(
+                                        (respuestaActual: respuestaActualizar) => {
+                                            respuesta.respuestaBDD.mensaje = respuestaActual.actualizar;
+                                            respuesta.cancion = respuestaActual.cancion;
+                                            return respuesta;
+                                        }
+                                    )
+                                );
+                        case 'Borrar':
+                            return rxjs
+                                .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
+                                .pipe(
+                                    map(
+                                        (nombre) => {
+
+                                            respuesta.cancion= nombre;
+                                            console.log('borrar cancion: '+respuesta.cancion.nombre);
+                                            return respuesta
+                                        }
+                                    )
+                                );
+                        case 'Imprimir':
+                            return rxjs.of(respuesta);
+                        default:
+                            respuesta.cancion = {
+                                nombre: null,
+                                autor: null,
+                                anio: null
+                            };
+                            rxjs.of(respuesta)
+
+                    }
+                }
+            ),
+            map(//dependiendo de la opcion seleccionada y los datos Actuar!! no devuelve observable
+                (respuesta: RespuestaCancion) => {
+                    console.log('respuesta en accion', respuesta);
+                    switch (respuesta.respuestaCancion.opcionMenu) {
+                        case 'Crear':
+                            const cancionNueva = respuesta.cancion;
+                            respuesta.respuestaBDD.bdd.canciones.push(cancionNueva);
+                            return respuesta;
+
+                        case 'Actualizar':
+                            const contenidoActual = JSON.stringify(respuesta.respuestaBDD.bdd);
+                            const baseActual = JSON.parse(contenidoActual);
+                            const indice = baseActual.canciones
+                                .findIndex(
+                                    (cancion) => {
+
+                                        return cancion.nombre === respuesta.respuestaBDD.mensaje;
+                                    }
+                                );
+
+                            console.log('indice' +indice);
+                            if (indice ){ //mayor -1
+                                console.log('Canción encontrada');
+                                respuesta.respuestaBDD.bdd.canciones[indice].nombre = respuesta.cancion.nombre;
+                                respuesta.respuestaBDD.bdd.canciones[indice].autor = respuesta.cancion.autor;
+                                //respuesta.respuestaBDD.bdd.canciones[indice].anio = respuesta.cancion.anio;
+                            }else {
+                                console.log(' Canción no existe');
+                                //respuesta.respuestaBDD.mensaje= 'Actualizar';
+                            }
+                            respuesta.respuestaBDD.bdd.canciones[indice].nombre = respuesta.cancion.nombre;
+                            respuesta.respuestaBDD.bdd.canciones[indice].autor = respuesta.cancion.autor;
+                            respuesta.respuestaBDD.bdd.canciones[indice].anio = respuesta.cancion.anio;
+                            respuesta.respuestaBDD.mensaje= 'Actualizar';
+
+                            return respuesta;
+
+                        case 'Borrar':
+                            const contenido = JSON.stringify(respuesta.respuestaBDD.bdd);
+                            const bdd = JSON.parse(contenido);
+                            const indiceCancion = bdd.canciones
+                                .findIndex(
+                                    (cancion) => {
+
+                                        return cancion.nombre === respuesta.cancion.nombre;
+                                    }
+                                );
+                            console.log('indice' +indiceCancion);
+                            bdd.canciones
+                                .splice(indiceCancion, 1);
+                            respuesta.respuestaBDD.mensaje= 'Cancion eliminada';
+                            respuesta.respuestaBDD.bdd= bdd;
+
+
+                            return respuesta;
+
+                        case 'Buscar':
+                            const base = JSON.parse(JSON.stringify(respuesta.respuestaBDD.bdd));
+                            const respuestaFind = base.canciones
+                                .find(
+                                    (cancion: Cancion) => {
+                                        return cancion.nombre === respuesta.cancion.nombre;
+                                    }
+                                );
+
+                            if (respuestaFind){
+                                console.log('Canción encontrada: '+JSON.stringify(respuestaFind,null,2));
+                            }else {
+                                console.log(' Canción no existe')
+                            }
+                            respuesta.respuestaBDD.mensaje= 'Busqueda';
+
+                            return respuesta;
+
+                        case 'Imprimir':
+                            console.log(respuesta.respuestaBDD.bdd);
+                            return respuesta
+
+
+                    }
+                }
+
+            ), // Guardar Base de Datos
+            mergeMap(
+                (respuesta: RespuestaCancion) => {
+                    return guardarBase(respuesta.respuestaBDD.bdd);
+                }
+            )
+        )
+        .subscribe(
+            (mensaje) => {
+                console.log(mensaje);
+            },
+            (error) => {
+                console.log(error);
+            }, () => {
+                console.log('Completado');
+                main();
+            }
+        )
+}
+function Menu(){
+    return rxjs.from(inquirer.prompt(preguntaMenu))
+}
+function Actualizar() {
+    return rxjs.from(inquirer.prompt(preguntaActualizarCancion))
+}
+
+//
+const nombreBD= 'canciones.json';
+function inicializarBase() {
     const leerBDD$ = rxjs.from(leerBDPromesa());
 
     return leerBDD$
@@ -12,7 +271,6 @@ export function inicializarBase() {
             mergeMap(
                 (respuestaLeerBDD: RespuestaBDD) => {
                     if (respuestaLeerBDD.bdd) {
-                        // truty / {}
                         return rxjs.of(respuestaLeerBDD)
                     } else {
                         // falsy / null
@@ -23,32 +281,38 @@ export function inicializarBase() {
         );
 }
 
-export function leerBDPromesa(){
+function leerBDPromesa(){
     // @ts-ignore
     return new Promise(
         (resolve) => {
-            fs.writeFile(
+            fs.readFile(
                 nombreBD,
                 'utf-8',
                 (error, contenidoLeido) => {
-                    if(error){
-                        resolve({bdd:null})
+                    if (error) {
+                        resolve({
+                            mensaje: 'Base de datos vacia',
+                            bdd: null
+                        });
+                    } else {
+                        resolve({
+                            mensaje: 'Si existe la Base',
+                            bdd: JSON.parse(contenidoLeido)
+                        });
                     }
-                    else{
-                        resolve({bdd: JSON.parse(contenidoLeido)})
-                    }
+
                 }
-            )
+            );
         }
     );
 }
 
-export function crearBD() {
+function crearBD() {
     const base = '{"canciones": []}';
     // @ts-ignore
     return new Promise(
         (resolve,reject) => {
-            fs.readFile(
+            fs.writeFile(
                 nombreBD,
                 base,
                 (err) => {
@@ -63,48 +327,174 @@ export function crearBD() {
     )
 }
 
-export function guardarBase(bdd: BaseDeDatos) {
+function guardarBase(bdd: BaseDeDatos) {
     // @ts-ignore
     return new Promise(
         (resolve,reject)=> {
             fs.writeFile(
-            nombreBD,
-            JSON.stringify(bdd,null,2),
-            (error) => {
-                if(error){
-                    reject({Mensaje: 'error guardando', error: 500});
-                } else {
-                    resolve({Mensaje: 'Base uardada'});
+                nombreBD,
+                JSON.stringify(bdd,null,2),
+                (error) => {
+                    if(error){
+                        reject({Mensaje: 'error guardando', error: 500});
+                    } else {
+                        resolve({Mensaje: 'Base guardada'});
+                    }
                 }
-            }
             )
         }
     )
 }
-export function buscarCancionNombre(){
+function buscarCancionNombre(nombre){
+    // @ts-ignore
+    return new Promise(
+        (resolve, reject) => {
+            fs.readFile(nombreBD, 'utf-8',
+                (err, contenido) => {
+                    if (err) {
 
+                        reject({mensaje: 'Error leyendo'});
+                    } else {
+                        const bdd = JSON.parse(contenido);
+                        const respuestaFind = bdd.canciones
+                            .find(
+                                (cancion: Cancion) => {
+                                    return cancion.nombre === nombre;
+                                }
+                            );
+
+                        resolve(respuestaFind);
+                    }
+                });
+        }
+    );
 }
 
+function actualizarCancion(nombre, cancion){
+    // @ts-ignore
+    return new Promise(
+        (resolve, reject) => {
+            fs.readFile(
+                nombreBD,
+                'utf-8',
+                (error, contenidoLeido) => {
+                    if (error){
+                        reject('Error leyendo')
+                    }  else {
+                        const bdd = JSON.parse(contenidoLeido);
+                        const indiceCancion = bdd.canciones
+                            .findIndex(
+                                (cancion) => {
+                                    return cancion.nombre = nombre;
+                                }
+                            );
+
+                        bdd.canciones[indiceCancion] = cancion;
+
+                        fs.writeFile(
+                            nombreBD,
+                            JSON.stringify(bdd, null,2),
+                            (err) =>{
+                                if (err){
+                                    reject(err)
+                                } else{
+                                    resolve({
+                                        mensaje: 'Cancion actualizada',
+                                        bdd: JSON.parse(bdd)})
+                                }
+                            }
+
+                        )
+                    }
+                });
+        }
+    );
+}
+
+function eliminarCancion(nombre){
+    // @ts-ignore
+    return new Promise(
+        (resolve, reject) => {
+            fs.readFile(
+                nombreBD,
+                'utf-8',
+                (error, contenidoLeido) => {
+                    if (error){
+                        reject('Error leyendo')
+                    }  else {
+                        const bdd = JSON.parse(contenidoLeido);
+                        const indiceCancion = bdd.canciones
+                            .findIndex(
+                                (cancion) => {
+                                    return cancion.nombre = nombre;
+                                }
+                            );
+
+                        if (indiceCancion){
+                            bdd.canciones
+                                .splice(indiceCancion, 1);
+                            resolve({
+                                mensaje: 'Cancion eliminada',
+                                bdd: bdd
+                            })
+                        } else {
+                            reject()
+                        }
+
+                        /*fs.writeFile(
+                            nombreBD,
+                            JSON.stringify(bdd, null,2),
+                            (err) =>{
+                                if (err){
+                                    reject(err)
+                                } else{
+                                    resolve({
+                                        mensaje: 'Cancion eliminada',
+                                        bdd: bdd
+                                    })
+                                }
+                            }
+
+                        )*/
+                    }
+                });
+        }
+    );
+}
+
+//
 interface Cancion {
     nombre: string;
     autor: string;
     anio: number;
 }
+interface respuestaActualizar{
+    actualizar: string;
+    cancion: Cancion;
+}
 
 interface BaseDeDatos {
-    canciones: [];
+    canciones: Cancion[];
 }
 interface RespuestaBDD {
     mensaje: string,
     bdd: BaseDeDatos
 }
-
 interface OpcionesPregunta {
-    opcionMenu: 'Crear' | 'Borrar' | 'Buscar' | 'Actualizar'
+    opcionMenu: 'Crear' | 'Borrar' | 'Buscar' | 'Actualizar' |'Imprimir'
 }
 
-interface RespuestaUsuario {
-    respuestaUsuario: OpcionesPregunta,
+interface RespuestaCancion {
+    respuestaCancion: OpcionesPregunta,
     respuestaBDD: RespuestaBDD
     cancion?: Cancion
 }
+/*
+const first = require('rxjs/operators').first
+const source = rxjs.from([1, 2, 3, 4, 5]);
+//no value will pass, emit default
+const example = source.pipe(first(val => val === 5, 'Nothing'));
+//output: 'Nothing'
+const subscribe = example.subscribe(val => console.log(val));
+*/
+main();

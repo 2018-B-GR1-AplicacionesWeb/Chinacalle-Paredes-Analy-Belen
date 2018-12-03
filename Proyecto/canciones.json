@@ -1,14 +1,22 @@
 {
   "canciones": [
     {
-      "nombre": "cancion10",
-      "autor": "autor10",
-      "anio": "10"
+      "nombre": "cancion20",
+      "autor": "autor20",
+      "anio": "20"
     },
     {
       "nombre": "cancion30",
       "autor": "autor30",
       "anio": "30"
+    },
+    {
+      "nombre": "cancion70",
+      "autor": "autor70",
+      "anio": "70"
+    },
+    {
+      "nombre": "cancion1"
     }
   ]
 }

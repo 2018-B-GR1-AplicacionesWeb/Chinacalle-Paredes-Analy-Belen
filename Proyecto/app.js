@@ -148,11 +148,12 @@ function main() {
                     .find((cancion) => {
                     return cancion.nombre === respuesta.cancion.nombre;
                 });
-                if (respuestaFind) {
-                    console.log('Cancion encontrada: '+respuestaFind);
+
+                if (respuestaFind){
+                    console.log('Cancion encontrada: '+JSON.stringify(respuestaFind,null,2));
                 }
                 else {
-                    console.log('Cancion No existe');
+                    console.log('Cancion no existente');
                 }
                 respuesta.respuestaBDD.mensaje = 'Busqueda';
                 return respuesta;
