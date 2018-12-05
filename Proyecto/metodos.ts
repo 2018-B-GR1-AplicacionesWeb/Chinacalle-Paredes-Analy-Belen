@@ -46,21 +46,22 @@ const preguntaCancionBusquedaPorNombre = [
         message: 'Escribe el nombre de la cancion a buscar'
     }
 ];
-
+const preguntaCancionActualizarPorNombre = [
+    {
+        type: 'input',
+        name: 'nombre',
+        message: 'Escribe el nombre de la cancion a buscar'
+    }
+];
 
 const preguntaActualizarCancion = [
     {
         type: 'input',
-        name: 'actualizar',
-        message: 'Escribe el nombre de la cancion a actualizar'
-    },
-    {
-        type: prev => prev != '' ? 'input':null,
         name: 'nombre',
         message: 'Escribe el nuevo nombre de la cancion'
     },
     {
-        type: prev => prev != ''? 'input':null,
+        type: 'input',
         name: 'autor',
         message: 'Escribe el nuevo autor de la cancion'
     },
@@ -117,16 +118,40 @@ function main(){
                                 );
                         case 'Actualizar':
                             return rxjs
-                                .from(inquirer.prompt(preguntaActualizarCancion))
+                                .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
                                 .pipe(
-                                    map(
-                                        (respuestaActual: respuestaActualizar) => {
-                                            respuesta.respuestaBDD.mensaje = respuestaActual.actualizar;
-                                            respuesta.cancion = respuestaActual.cancion;
-                                            return respuesta;
+                                    mergeMap(
+                                        (nombre) => {
+                                            respuesta.cancion= nombre;
+                                            const indiceCancionBuscar = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
+                                            console.log('indice ' +indiceCancionBuscar);
+                                            respuesta.indice = indiceCancionBuscar;
+                                            if (indiceCancionBuscar > -1 ){ //mayor -1
+                                                console.log('Canción encontrada');
+                                                console.log(JSON.stringify(respuesta.respuestaBDD.bdd.canciones[indiceCancionBuscar],null,2));
+                                                return rxjs
+                                                    .from(inquirer.prompt(preguntaActualizarCancion))
+                                                    .pipe(
+                                                        map(
+                                                            (cancion)=>{
+                                                                console.log('valor: ' + JSON.stringify(cancion));
+                                                                //Actualizas el ob respuesta
+                                                                respuesta.cancion = cancion;
+                                                                return respuesta
+                                                            }
+                                                        )
+                                                    );
+                                            }else {
+                                                console.log(' Canción no existe');
+                                            }
+                                            respuesta.indice = indiceCancionBuscar;
+                                            return respuesta
+
                                         }
-                                    )
+                                    ),
+
                                 );
+
                         case 'Borrar':
                             return rxjs
                                 .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
@@ -163,65 +188,35 @@ function main(){
                             return respuesta;
 
                         case 'Actualizar':
-                            const contenidoActual = JSON.stringify(respuesta.respuestaBDD.bdd);
-                            const baseActual = JSON.parse(contenidoActual);
-                            const indice = baseActual.canciones
-                                .findIndex(
-                                    (cancion) => {
-
-                                        return cancion.nombre === respuesta.respuestaBDD.mensaje;
-                                    }
-                                );
-
-                            console.log('indice' +indice);
-                            if (indice ){ //mayor -1
-                                console.log('Canción encontrada');
-                                respuesta.respuestaBDD.bdd.canciones[indice].nombre = respuesta.cancion.nombre;
-                                respuesta.respuestaBDD.bdd.canciones[indice].autor = respuesta.cancion.autor;
-                                //respuesta.respuestaBDD.bdd.canciones[indice].anio = respuesta.cancion.anio;
-                            }else {
-                                console.log(' Canción no existe');
-                                //respuesta.respuestaBDD.mensaje= 'Actualizar';
-                            }
-                            respuesta.respuestaBDD.bdd.canciones[indice].nombre = respuesta.cancion.nombre;
-                            respuesta.respuestaBDD.bdd.canciones[indice].autor = respuesta.cancion.autor;
-                            respuesta.respuestaBDD.bdd.canciones[indice].anio = respuesta.cancion.anio;
-                            respuesta.respuestaBDD.mensaje= 'Actualizar';
-
+                            console.log('nueva cancion: ' + JSON.stringify(respuesta.cancion));
+                            console.log('antigua cancion: ' + JSON.stringify(respuesta.respuestaBDD.bdd.canciones[respuesta.indice]));
+                            respuesta.respuestaBDD.bdd.canciones[respuesta.indice].nombre = respuesta.cancion.nombre;
+                            respuesta.respuestaBDD.bdd.canciones[respuesta.indice].autor = respuesta.cancion.autor;
+                            respuesta.respuestaBDD.bdd.canciones[respuesta.indice].anio = respuesta.cancion.anio;
                             return respuesta;
 
                         case 'Borrar':
                             const contenido = JSON.stringify(respuesta.respuestaBDD.bdd);
                             const bdd = JSON.parse(contenido);
-                            const indiceCancion = bdd.canciones
-                                .findIndex(
-                                    (cancion) => {
 
-                                        return cancion.nombre === respuesta.cancion.nombre;
-                                    }
-                                );
-                            console.log('indice' +indiceCancion);
+                            const indiceCancion = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
+                            //console.log('indice' +indiceCancion);
                             bdd.canciones
                                 .splice(indiceCancion, 1);
                             respuesta.respuestaBDD.mensaje= 'Cancion eliminada';
                             respuesta.respuestaBDD.bdd= bdd;
 
-
                             return respuesta;
 
                         case 'Buscar':
-                            const base = JSON.parse(JSON.stringify(respuesta.respuestaBDD.bdd));
-                            const respuestaFind = base.canciones
-                                .find(
-                                    (cancion: Cancion) => {
-                                        return cancion.nombre === respuesta.cancion.nombre;
-                                    }
-                                );
+                            const indiceaBuscar = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
 
-                            if (respuestaFind){
-                                console.log('Canción encontrada: '+JSON.stringify(respuestaFind,null,2));
+                            //console.log('indice ' +indiceaBuscar);
+                            if (indiceaBuscar > -1 ){ //mayor -1
+                                console.log('Canción encontrada: '+JSON.stringify(respuesta.respuestaBDD.bdd.canciones[indiceaBuscar],null,2));
+
                             }else {
-                                console.log(' Canción no existe')
+                                console.log(' Canción no existe');
                             }
                             respuesta.respuestaBDD.mensaje= 'Busqueda';
 
@@ -257,10 +252,11 @@ function main(){
 function Menu(){
     return rxjs.from(inquirer.prompt(preguntaMenu))
 }
-function Actualizar() {
-    return rxjs.from(inquirer.prompt(preguntaActualizarCancion))
-}
 
+function Actualizar( ) {
+    return rxjs.from(inquirer.prompt(preguntaActualizarCancion))
+
+}
 //
 const nombreBD= 'canciones.json';
 function inicializarBase() {
@@ -345,121 +341,17 @@ function guardarBase(bdd: BaseDeDatos) {
         }
     )
 }
-function buscarCancionNombre(nombre){
-    // @ts-ignore
-    return new Promise(
-        (resolve, reject) => {
-            fs.readFile(nombreBD, 'utf-8',
-                (err, contenido) => {
-                    if (err) {
+function buscarCancion(nombre, bdd) {
+    const contenidoActual = JSON.stringify(bdd);
+    const baseActual = JSON.parse(contenidoActual);
+    const indiceCancion = baseActual.canciones
+        .findIndex(
+            (cancion) => {
 
-                        reject({mensaje: 'Error leyendo'});
-                    } else {
-                        const bdd = JSON.parse(contenido);
-                        const respuestaFind = bdd.canciones
-                            .find(
-                                (cancion: Cancion) => {
-                                    return cancion.nombre === nombre;
-                                }
-                            );
-
-                        resolve(respuestaFind);
-                    }
-                });
-        }
-    );
-}
-
-function actualizarCancion(nombre, cancion){
-    // @ts-ignore
-    return new Promise(
-        (resolve, reject) => {
-            fs.readFile(
-                nombreBD,
-                'utf-8',
-                (error, contenidoLeido) => {
-                    if (error){
-                        reject('Error leyendo')
-                    }  else {
-                        const bdd = JSON.parse(contenidoLeido);
-                        const indiceCancion = bdd.canciones
-                            .findIndex(
-                                (cancion) => {
-                                    return cancion.nombre = nombre;
-                                }
-                            );
-
-                        bdd.canciones[indiceCancion] = cancion;
-
-                        fs.writeFile(
-                            nombreBD,
-                            JSON.stringify(bdd, null,2),
-                            (err) =>{
-                                if (err){
-                                    reject(err)
-                                } else{
-                                    resolve({
-                                        mensaje: 'Cancion actualizada',
-                                        bdd: JSON.parse(bdd)})
-                                }
-                            }
-
-                        )
-                    }
-                });
-        }
-    );
-}
-
-function eliminarCancion(nombre){
-    // @ts-ignore
-    return new Promise(
-        (resolve, reject) => {
-            fs.readFile(
-                nombreBD,
-                'utf-8',
-                (error, contenidoLeido) => {
-                    if (error){
-                        reject('Error leyendo')
-                    }  else {
-                        const bdd = JSON.parse(contenidoLeido);
-                        const indiceCancion = bdd.canciones
-                            .findIndex(
-                                (cancion) => {
-                                    return cancion.nombre = nombre;
-                                }
-                            );
-
-                        if (indiceCancion){
-                            bdd.canciones
-                                .splice(indiceCancion, 1);
-                            resolve({
-                                mensaje: 'Cancion eliminada',
-                                bdd: bdd
-                            })
-                        } else {
-                            reject()
-                        }
-
-                        /*fs.writeFile(
-                            nombreBD,
-                            JSON.stringify(bdd, null,2),
-                            (err) =>{
-                                if (err){
-                                    reject(err)
-                                } else{
-                                    resolve({
-                                        mensaje: 'Cancion eliminada',
-                                        bdd: bdd
-                                    })
-                                }
-                            }
-
-                        )*/
-                    }
-                });
-        }
-    );
+                return cancion.nombre === nombre;
+            }
+        );
+    return indiceCancion;
 }
 
 //
@@ -488,6 +380,7 @@ interface RespuestaCancion {
     respuestaCancion: OpcionesPregunta,
     respuestaBDD: RespuestaBDD
     cancion?: Cancion
+    indice?: number
 }
 /*
 const first = require('rxjs/operators').first
