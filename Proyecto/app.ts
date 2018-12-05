@@ -114,19 +114,9 @@ function main(){
                                 .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
                                 .pipe(
                                     map(
-                                        nombre => {
-                                            respuesta.cancion.nombre = nombre;
-                                            return rxjs
-                                                .from(actualizarCancion(nombre,inquirer.prompt(preguntaActualizarCancion)))
-                                                .pipe(
-                                                    map(
-                                                        (mensaje)=> {
-                                                            respuesta.respuestaBDD = mensaje;
-                                                            return respuesta
-                                                        }
-                                                    )
-                                                )
-
+                                        (nombre) => {
+                                            respuesta.cancion= nombre;
+                                            return respuesta
                                         }
                                     )
                                 );
@@ -330,6 +320,7 @@ function guardarBase(bdd: BaseDeDatos) {
         }
     )
 }
+
 function buscarCancionNombre(nombre){
     // @ts-ignore
     return new Promise(

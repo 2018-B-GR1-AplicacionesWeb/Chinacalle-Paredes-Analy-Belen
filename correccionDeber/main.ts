@@ -241,9 +241,7 @@ function anadirUsuario(usuario) {
                     } else {
                         const bdd = JSON.parse(contenido);
 
-
                         bdd.usuarios.push(usuario);
-
 
                         fs.writeFile(
                             'bdd.json',
