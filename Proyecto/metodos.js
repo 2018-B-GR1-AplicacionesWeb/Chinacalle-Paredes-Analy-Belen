@@ -1,11 +1,11 @@
-var fs = require('fs');
-var inquirer = require('inquirer');
-var rxjs = require('rxjs');
-var mergeMap = require('rxjs/operators').mergeMap;
-var map = require('rxjs/operators').map;
-var find = require('rxjs/operators').find;
-var filter = require('rxjs/operators').filter;
-var preguntaMenu = {
+const fs = require('fs');
+const inquirer = require('inquirer');
+const rxjs = require('rxjs');
+const mergeMap = require('rxjs/operators').mergeMap;
+const map = require('rxjs/operators').map;
+const find = require('rxjs/operators').find;
+const filter = require('rxjs/operators').filter;
+const preguntaMenu = {
     type: 'list',
     name: 'opcionMenu',
     message: 'Que quieres hacer??',
@@ -17,7 +17,7 @@ var preguntaMenu = {
         'Imprimir',
     ]
 };
-var preguntaNuevaCancion = [
+const preguntaNuevaCancion = [
     {
         type: 'input',
         name: 'nombre',
@@ -34,21 +34,21 @@ var preguntaNuevaCancion = [
         message: 'Año de la cancion: '
     },
 ];
-var preguntaCancionBusquedaPorNombre = [
+const preguntaCancionBusquedaPorNombre = [
     {
         type: 'input',
         name: 'nombre',
         message: 'Escribe el nombre de la cancion a buscar'
     }
 ];
-var preguntaCancionActualizarPorNombre = [
+const preguntaCancionActualizarPorNombre = [
     {
         type: 'input',
         name: 'nombre',
         message: 'Escribe el nombre de la cancion a buscar'
     }
 ];
-var preguntaActualizarCancion = [
+const preguntaActualizarCancion = [
     {
         type: 'input',
         name: 'nombre',
@@ -67,37 +67,37 @@ var preguntaActualizarCancion = [
 ];
 function main() {
     inicializarBase()
-        .pipe(mergeMap(function (respuestaBDD) {
+        .pipe(mergeMap((respuestaBDD) => {
         return Menu()
-            .pipe(map(function (respuesta) {
+            .pipe(map((respuesta) => {
             return {
                 respuestaCancion: respuesta,
-                respuestaBDD: respuestaBDD
+                respuestaBDD
             };
         }));
     }), mergeMap(//preuntar y devolver observable
-    function (respuesta) {
+    (respuesta) => {
         switch (respuesta.respuestaCancion.opcionMenu) {
             case 'Crear':
                 return rxjs
                     .from(inquirer.prompt(preguntaNuevaCancion))
-                    .pipe(map(function (cancion) {
+                    .pipe(map((cancion) => {
                     respuesta.cancion = cancion;
                     return respuesta;
                 }));
             case 'Buscar':
                 return rxjs
                     .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
-                    .pipe(map(function (nombre) {
+                    .pipe(map((nombre) => {
                     respuesta.cancion = nombre;
                     return respuesta;
                 }));
             case 'Actualizar':
                 return rxjs
                     .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
-                    .pipe(mergeMap(function (nombre) {
+                    .pipe(mergeMap((nombre) => {
                     respuesta.cancion = nombre;
-                    var indiceCancionBuscar = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
+                    const indiceCancionBuscar = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
                     console.log('indice ' + indiceCancionBuscar);
                     respuesta.indice = indiceCancionBuscar;
                     if (indiceCancionBuscar > -1) { //mayor -1
@@ -105,7 +105,7 @@ function main() {
                         console.log(JSON.stringify(respuesta.respuestaBDD.bdd.canciones[indiceCancionBuscar], null, 2));
                         return rxjs
                             .from(inquirer.prompt(preguntaActualizarCancion))
-                            .pipe(map(function (cancion) {
+                            .pipe(map((cancion) => {
                             console.log('valor: ' + JSON.stringify(cancion));
                             //Actualizas el ob respuesta
                             respuesta.cancion = cancion;
@@ -121,7 +121,7 @@ function main() {
             case 'Borrar':
                 return rxjs
                     .from(inquirer.prompt(preguntaCancionBusquedaPorNombre))
-                    .pipe(map(function (nombre) {
+                    .pipe(map((nombre) => {
                     respuesta.cancion = nombre;
                     console.log('borrar cancion: ' + respuesta.cancion.nombre);
                     return respuesta;
@@ -137,11 +137,11 @@ function main() {
                 rxjs.of(respuesta);
         }
     }), map(//dependiendo de la opcion seleccionada y los datos Actuar!! no devuelve observable
-    function (respuesta) {
+    (respuesta) => {
         console.log('respuesta en accion', respuesta);
         switch (respuesta.respuestaCancion.opcionMenu) {
             case 'Crear':
-                var cancionNueva = respuesta.cancion;
+                const cancionNueva = respuesta.cancion;
                 respuesta.respuestaBDD.bdd.canciones.push(cancionNueva);
                 return respuesta;
             case 'Actualizar':
@@ -152,9 +152,9 @@ function main() {
                 respuesta.respuestaBDD.bdd.canciones[respuesta.indice].anio = respuesta.cancion.anio;
                 return respuesta;
             case 'Borrar':
-                var contenido = JSON.stringify(respuesta.respuestaBDD.bdd);
-                var bdd = JSON.parse(contenido);
-                var indiceCancion = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
+                const contenido = JSON.stringify(respuesta.respuestaBDD.bdd);
+                const bdd = JSON.parse(contenido);
+                const indiceCancion = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
                 //console.log('indice' +indiceCancion);
                 bdd.canciones
                     .splice(indiceCancion, 1);
@@ -162,7 +162,7 @@ function main() {
                 respuesta.respuestaBDD.bdd = bdd;
                 return respuesta;
             case 'Buscar':
-                var indiceaBuscar = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
+                const indiceaBuscar = buscarCancion(respuesta.cancion.nombre, respuesta.respuestaBDD.bdd);
                 //console.log('indice ' +indiceaBuscar);
                 if (indiceaBuscar > -1) { //mayor -1
                     console.log('Canción encontrada: ' + JSON.stringify(respuesta.respuestaBDD.bdd.canciones[indiceaBuscar], null, 2));
@@ -177,14 +177,14 @@ function main() {
                 return respuesta;
         }
     }), // Guardar Base de Datos
-    mergeMap(function (respuesta) {
+    mergeMap((respuesta) => {
         return guardarBase(respuesta.respuestaBDD.bdd);
     }))
-        .subscribe(function (mensaje) {
+        .subscribe((mensaje) => {
         console.log(mensaje);
-    }, function (error) {
+    }, (error) => {
         console.log(error);
-    }, function () {
+    }, () => {
         console.log('Completado');
         main();
     });
@@ -196,11 +196,11 @@ function Actualizar() {
     return rxjs.from(inquirer.prompt(preguntaActualizarCancion));
 }
 //
-var nombreBD = 'canciones.json';
+const nombreBD = 'canciones.json';
 function inicializarBase() {
-    var leerBDD$ = rxjs.from(leerBDPromesa());
+    const leerBDD$ = rxjs.from(leerBDPromesa());
     return leerBDD$
-        .pipe(mergeMap(function (respuestaLeerBDD) {
+        .pipe(mergeMap((respuestaLeerBDD) => {
         if (respuestaLeerBDD.bdd) {
             return rxjs.of(respuestaLeerBDD);
         }
@@ -212,8 +212,8 @@ function inicializarBase() {
 }
 function leerBDPromesa() {
     // @ts-ignore
-    return new Promise(function (resolve) {
-        fs.readFile(nombreBD, 'utf-8', function (error, contenidoLeido) {
+    return new Promise((resolve) => {
+        fs.readFile(nombreBD, 'utf-8', (error, contenidoLeido) => {
             if (error) {
                 resolve({
                     mensaje: 'Base de datos vacia',
@@ -230,10 +230,10 @@ function leerBDPromesa() {
     });
 }
 function crearBD() {
-    var base = '{"canciones": []}';
+    const base = '{"canciones": []}';
     // @ts-ignore
-    return new Promise(function (resolve, reject) {
-        fs.writeFile(nombreBD, base, function (err) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(nombreBD, base, (err) => {
             if (err) {
                 reject({ Mensaje: 'error creando Base', error: 500 });
             }
@@ -245,8 +245,8 @@ function crearBD() {
 }
 function guardarBase(bdd) {
     // @ts-ignore
-    return new Promise(function (resolve, reject) {
-        fs.writeFile(nombreBD, JSON.stringify(bdd, null, 2), function (error) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(nombreBD, JSON.stringify(bdd, null, 2), (error) => {
             if (error) {
                 reject({ Mensaje: 'error guardando', error: 500 });
             }
@@ -257,10 +257,10 @@ function guardarBase(bdd) {
     });
 }
 function buscarCancion(nombre, bdd) {
-    var contenidoActual = JSON.stringify(bdd);
-    var baseActual = JSON.parse(contenidoActual);
-    var indiceCancion = baseActual.canciones
-        .findIndex(function (cancion) {
+    const contenidoActual = JSON.stringify(bdd);
+    const baseActual = JSON.parse(contenidoActual);
+    const indiceCancion = baseActual.canciones
+        .findIndex((cancion) => {
         return cancion.nombre === nombre;
     });
     return indiceCancion;

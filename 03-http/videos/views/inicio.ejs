@@ -1,0 +1,25 @@
+<h1><%= usuario %></h1>  ##El igual es para mostrar algo
+<% var bel = 'bel'%>
+<h2><%= bel%></h2>
+-- ul Listar cosas sin orden =! ol
+<% if(booleano){%>
+<p> Usted creo una noticia</p>
+<% }%>
+<ul>
+    <% noticia.forEach( (noticia) => {     %>
+        <li>
+            <%= noticia.titulo%>
+            -
+            <%= noticia.descripcion     %>
+            <button> click</button>
+            <form action="/adiosMundo" method="POST">
+                <button type="button"> Clickea sin problemas</button>
+                <button> También envia info</button>
+                <button type="submit"> Enviar </button>
+            </form>
+        </li>
+    <%})%>
+</ul>
+
+<br>
+<p>Esto es un Parrafo</p>

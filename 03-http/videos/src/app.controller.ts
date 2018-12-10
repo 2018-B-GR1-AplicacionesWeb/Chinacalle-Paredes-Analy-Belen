@@ -1,3 +1,5 @@
+
+//Controlador --> gestiona comunicacion (peticiones http)
 import {
     Get,
     Controller,
@@ -43,8 +45,34 @@ export class AppController {
   }
 
   @Post('adiosMundo')
-  adiosMundoPost(): string {
-      return 'Adios mundo POST'
+  adiosMundoPost(
+      @Res() response
+  ) {
+      response.render(
+          'inicio',
+          {
+              usuario: 'Analy',
+              noticia: [
+                  {
+                      titulo: 'A',
+                      descripcion: 'asdfghjkl'
+                  },
+                  {
+                      titulo: 'B',
+                      descripcion: 'asdfghjkl'
+                  },
+                  {
+                      titulo: 'C',
+                      descripcion: 'asdfghjkl'
+                  },
+                  {
+                      titulo: 'D',
+                      descripcion: 'asdfghjkl'
+                  }
+              ],
+              booleano: true
+          }
+      )
   }
 
   @Get('adiosMundoPromesa')
@@ -120,7 +148,38 @@ export class AppController {
       }
 
     }
+
+@Get('inicio')
+    inicio(
+        @Res() response,
+){
+      response.render(
+          'inicio',
+          {
+              usuario: 'Analy',
+              noticia: [
+                  {
+                      titulo: 'A',
+                      descripcion: 'asdfghjkl'
+                  },
+                  {
+                      titulo: 'B',
+                      descripcion: 'asdfghjkl'
+                  },
+                  {
+                      titulo: 'C',
+                      descripcion: 'asdfghjkl'
+                  }
+              ],
+              booleano: false
+          }
+      )
 }
+}
+
+
+
+
 
 export interface Usuario {
     nombre: string;
