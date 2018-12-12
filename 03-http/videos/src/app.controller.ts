@@ -16,11 +16,36 @@ import { AppService } from './app.service';
 import {Observable, of} from "rxjs";
 import {Request} from "express-serve-static-core";
 import {Response} from "express";
+import {NoticiaService} from "./noticia.service";
 //COntrolador gestiona Request y Response
 @Controller()   //decorador   --> @nombre(paréntesis)   Es una función
 export class AppController {
-  constructor(private readonly _appService: AppService) {} //NO ES UN CONSTRUCTOR
-
+    arreglo: Noticia[] = [
+        {
+            id:1,
+            titulo: 'A',
+            descripcion: 'asdfghjkl'
+        },
+        {
+            id:2,
+            titulo: 'B',
+            descripcion: 'asdfghjkl'
+        },
+        {
+            id:3,
+            titulo: 'C',
+            descripcion: 'asdfghjkl'
+        },
+        {
+            id:4,
+            titulo: 'D',
+            descripcion: 'asdfghjkl'
+        }
+        ];
+    numeroRegistro = 5;
+  constructor(private readonly _appService: AppService,
+              private readonly _noticiaService: NoticiaService) {} //NO ES UN CONSTRUCTOR
+//constructor es la forma de inyectar dependencias
     //http://ip:puerto
   @Get()    //Con esto se indica que el método se ejecuta cuando se haga un request con metodo get
   @HttpCode(200) //status
@@ -52,24 +77,7 @@ export class AppController {
           'inicio',
           {
               usuario: 'Analy',
-              noticia: [
-                  {
-                      titulo: 'A',
-                      descripcion: 'asdfghjkl'
-                  },
-                  {
-                      titulo: 'B',
-                      descripcion: 'asdfghjkl'
-                  },
-                  {
-                      titulo: 'C',
-                      descripcion: 'asdfghjkl'
-                  },
-                  {
-                      titulo: 'D',
-                      descripcion: 'asdfghjkl'
-                  }
-              ],
+              arreglo: [],
               booleano: true
           }
       )
@@ -157,26 +165,48 @@ export class AppController {
           'inicio',
           {
               usuario: 'Analy',
-              noticia: [
-                  {
-                      titulo: 'A',
-                      descripcion: 'asdfghjkl'
-                  },
-                  {
-                      titulo: 'B',
-                      descripcion: 'asdfghjkl'
-                  },
-                  {
-                      titulo: 'C',
-                      descripcion: 'asdfghjkl'
-                  }
-              ],
+              arreglo: this._noticiaService.arreglo,
               booleano: false
           }
       )
 }
+    @Get('crear-noticia')
+    crearNoticiaRuta(
+        @Res() response
+    ){
+        response.render(
+            'crear-noticia'
+        )
+    }
+    @Post('crear-noticia')
+    crearNoticiaFunction(
+        @Res() response,
+        @Body() noticia: Noticia
+    ){
+        this._noticiaService.crear(noticia);
+
+        response.redirect('/inicio')
+    }
+
+//Todos los parametros que llegan de ruta son de tipo string
+@Post('eliminar/:idNoticia')
+    eliminar(
+        @Res() response,
+        @Param('idNoticia') idNoticia: string,
+
+    ){
+      this._noticiaService.eliminar(Number(idNoticia));
+      response.redirect('/inicio')
 }
 
+
+
+
+
+
+
+
+}
 
 
 
@@ -184,6 +214,11 @@ export class AppController {
 export interface Usuario {
     nombre: string;
     //
+}
+export interface Noticia {
+    id?: number;
+    titulo?: string;
+    descripcion?: string;
 }
 
 /////////////////////       CONSULTA
