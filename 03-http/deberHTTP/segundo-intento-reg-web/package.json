@@ -1,11 +1,10 @@
 {
-  "name": "videos",
+  "name": "segundo-intento-reg-web",
   "version": "0.0.0",
   "description": "description",
-  "author": "",
+  "author": "analy",
   "license": "MIT",
   "scripts": {
-    "listar": "echo HOLA MUNDO && ls && echo CHAO MUNDO",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
@@ -22,10 +21,8 @@
   "dependencies": {
     "@nestjs/common": "^5.4.0",
     "@nestjs/core": "^5.4.0",
-    "cookie-parser": "^1.4.3",
     "ejs": "^2.6.1",
-    "http-server": "^0.11.1",
-    "inquirer": "^6.2.0",
+    "express": "^4.16.4",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.2.2",

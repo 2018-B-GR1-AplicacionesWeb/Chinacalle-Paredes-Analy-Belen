@@ -45,13 +45,18 @@ export class NoticiaService{
     }
 
     actualizar(idNoticia: number, nuevaNoticia: Noticia){
+        const noticia= this.buscarPorId(idNoticia);
+        const indiceNoticia = noticia.id;
+        this.arreglo[indiceNoticia] = nuevaNoticia;
+        return this.arreglo[indiceNoticia];
+    }
+    buscarPorId(idNoticia: number): Noticia{
         const indiceNoticia= this.arreglo
             .findIndex(
                 (noticia)=> {
                     return noticia.id === idNoticia
                 }
             );
-        this.arreglo[indiceNoticia] = nuevaNoticia;
-        return this.arreglo[indiceNoticia];
+        return this.arreglo[indiceNoticia]
     }
 }

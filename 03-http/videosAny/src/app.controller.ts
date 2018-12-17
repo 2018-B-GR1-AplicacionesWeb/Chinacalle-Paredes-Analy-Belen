@@ -1,5 +1,4 @@
 
-//Controlador --> gestiona comunicacion (peticiones http)
 import {
     Get,
     Controller,
@@ -9,7 +8,7 @@ import {
     Query,
     Param,
     Body,
-    Headers, UnauthorizedException, Req, Res
+    Headers, UnauthorizedException, Req, Res,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 //import {async} from "rxjs/internal/scheduler/async";
@@ -138,13 +137,24 @@ export class AppController {
 @Get('inicio')
     inicio(
         @Res() response,
+        @Query() consulta,
+        @Query('accion') accion: string,
+        @Query('titulo') titulo: string
 ){
+      let mensaje= undefined;
+      if(accion &&titulo ){
+          switch (accion) {
+              case 'borrar':
+                  mensaje = `Registro ${titulo} eliminado`;
+          }
+      }
       response.render(
           'inicio',
           {
               usuario: 'Analy',
               arreglo: this._noticiaService.arreglo,
-              booleano: false
+              booleano: false,
+              amansaje: mensaje
           }
       )
 }
@@ -173,14 +183,35 @@ export class AppController {
         @Param('idNoticia') idNoticia: string,
 
     ){
+      const noticiaBorrada=
       this._noticiaService.eliminar(Number(idNoticia));
       response.redirect('/inicio')
   }
 
+  @Get('actualizar-noticia/:idNoticia')
+  actualizarNoticiaVista(
+      @Res() response,
+      @Param('idNoticia') idNoticia: string
+  ){
+      const noticiaEncontrada = this._noticiaService.buscarPorId(+idNoticia); //El + transforma a número
+      response.render(
+          'crear-noticia',
+          {
+              noticia: noticiaEncontrada
+          }
+      )
+  }
+  @Post('actualizar-noticia/:idNoticia')
+    actualizarNoticiaMetodo(
+        @Res() response,
+        @Param('idNoticia') idNoticia: string,
+        @Body() noticia: Noticia
+  ){
+      noticia.id = +idNoticia;
+      this._noticiaService.actualizar(+idNoticia,noticia);
+      response.redirect('inicio');
+  }
 
-    root() {
-
-    }
 }
 
 
