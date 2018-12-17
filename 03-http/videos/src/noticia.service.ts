@@ -1,6 +1,5 @@
 import {Injectable} from "@nestjs/common";
 import {Noticia} from "./app.controller";
-import {not} from "rxjs/internal-compatibility";
 
 @Injectable()
 export class NoticiaService{

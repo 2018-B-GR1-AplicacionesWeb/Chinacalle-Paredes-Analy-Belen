@@ -35,8 +35,9 @@
     </tr>
     <!-- tr -> table row -->
     <% arreglo.forEach( (noticia)=> { %>
-        <tr>
+        <td>
             <!-- td -> table detail -->
+            <td><%= noticia.id%> </td>
             <td><%= noticia.titulo %></td>
             <td><%= noticia.descripcion %></td>
             <td>

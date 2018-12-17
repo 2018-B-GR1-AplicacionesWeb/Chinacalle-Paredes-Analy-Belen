@@ -20,28 +20,6 @@ import {NoticiaService} from "./noticia.service";
 //COntrolador gestiona Request y Response
 @Controller()   //decorador   --> @nombre(paréntesis)   Es una función
 export class AppController {
-    arreglo: Noticia[] = [
-        {
-            id:1,
-            titulo: 'A',
-            descripcion: 'asdfghjkl'
-        },
-        {
-            id:2,
-            titulo: 'B',
-            descripcion: 'asdfghjkl'
-        },
-        {
-            id:3,
-            titulo: 'C',
-            descripcion: 'asdfghjkl'
-        },
-        {
-            id:4,
-            titulo: 'D',
-            descripcion: 'asdfghjkl'
-        }
-        ];
     numeroRegistro = 5;
   constructor(private readonly _appService: AppService,
               private readonly _noticiaService: NoticiaService) {} //NO ES UN CONSTRUCTOR
@@ -197,15 +175,12 @@ export class AppController {
     ){
       this._noticiaService.eliminar(Number(idNoticia));
       response.redirect('/inicio')
-}
+  }
 
 
+    root() {
 
-
-
-
-
-
+    }
 }
 
 

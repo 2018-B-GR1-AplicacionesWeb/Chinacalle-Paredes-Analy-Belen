@@ -1,0 +1,40 @@
+<!-- th -> table header -->
+<style>
+    table, th, td{
+        border: 1px darkblue;
+        border-collapse: collapse;
+    }
+</style>
+
+<% if (booleano){ %>
+    <p> Se creó una canción </p>
+ <% } %>
+<a href="/crear-cancion">
+    <button> Crear cancion</button>
+</a>
+
+
+<table>
+    <tr>
+        <th> ID</th>
+        <th> Nombre</th>
+        <th> Autor</th>
+        <th> Año</th>
+    </tr>
+    <% canciones.forEach((cancion:Cancion)=>{ %>
+        <td>
+
+        <td><%= cancion.id%> </td>
+        <td><%= cancion.nombre%> </td>
+        <td><%= cancion.autor.nombre%> </td>
+        <td><%= cancion.anio%> </td>
+        <td>
+            <form action="/eliminar/<%= cancion.id %>" method="post">
+                <button type="submit">Eliminar</button>
+            </form>
+
+        </td>
+
+        </td>
+    <%} ) %>
+</table>

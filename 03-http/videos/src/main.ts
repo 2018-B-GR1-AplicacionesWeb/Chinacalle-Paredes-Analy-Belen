@@ -14,7 +14,7 @@ async function bootstrap() {
       {//opciones
       }
   ));
-  app.set('view engine', 'ejs');
+  app.set('view engine', 'ejs'); //IMPORTANTE PONER EN PROYECTOS
   await app.listen(3000);   //puerto en el que se levanta el servidor
 }
 bootstrap();
