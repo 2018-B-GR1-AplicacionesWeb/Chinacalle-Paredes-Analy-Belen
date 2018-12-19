@@ -11,8 +11,7 @@
     "target": "es6",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "src"
-    //"baseUrl": "./"
+    "baseUrl": "./"
   },
   "include": [
     "src/**/*"

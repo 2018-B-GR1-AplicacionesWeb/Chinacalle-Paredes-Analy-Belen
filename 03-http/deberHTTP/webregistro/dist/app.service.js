@@ -11,6 +11,9 @@ let AppService = class AppService {
     constructor() {
         this.nombreArchivo = 'canciones.json';
     }
+    root() {
+        return 'Hello World!';
+    }
 };
 AppService = __decorate([
     common_1.Injectable()

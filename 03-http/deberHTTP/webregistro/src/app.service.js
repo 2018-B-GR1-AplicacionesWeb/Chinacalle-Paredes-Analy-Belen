@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var common_1 = require("@nestjs/common");
 var AppService = /** @class */ (function () {
     function AppService() {
+        this.nombreArchivo = 'canciones.json';
     }
     AppService.prototype.root = function () {
         return 'Hello World!';

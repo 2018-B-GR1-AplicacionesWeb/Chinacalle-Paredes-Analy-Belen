@@ -5,7 +5,7 @@ export class AppService {
   root(): string {
     return 'Hello World!';
   }
+  inicio(){
 
-  nombreArchivo = 'canciones.json';
-
+  }
 }
