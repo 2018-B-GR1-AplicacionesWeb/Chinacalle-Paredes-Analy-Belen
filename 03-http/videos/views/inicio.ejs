@@ -1,3 +1,5 @@
+<% const existeMensaje = typeof mensaje!== "undefined"%>
+
 <!--Etiqueta stile lee CSS -->
 <style>
     table, th, td{
@@ -6,6 +8,9 @@
     }
 </style>
 
+<%if (existeMensaje){%>
+    <p>MENSAJE: <%= mensaje%></p>
+<%}%>
 
 <!--Header 1 -->
 <h1><%= usuario %></h1>  <!-- El igual es para mostrar algo -->
@@ -21,8 +26,6 @@
 <a href="/crear-noticia">
     <button> Crear noticia</button>
 </a>
-
-
 
 
 <table>
@@ -46,6 +49,9 @@
                     -->
                     <button type="submit"> Eliminar</button>
                 </form>
+                <a href="/actualizar-noticia/<%= noticia.id%>">
+                    <button>Actualizar</button>
+                </a>
             </td>
         </tr>
     <% }) %>
@@ -60,4 +66,3 @@
     </tr>
 </table>
 -->
-<p>Esto es un Parrafo</p>

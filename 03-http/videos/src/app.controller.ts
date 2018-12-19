@@ -160,13 +160,26 @@ export class AppController {
 @Get('inicio')
     inicio(
         @Res() response,
+        @Query('accion') accion: string,
+        @Query('titulo') titulo: string
 ){
+
+      let mensaje= undefined;
+      if (accion && titulo){
+          switch (accion) {
+              case 'borrar':
+                  mensaje = `Registro ${titulo} eliminado`
+          }
+      }
+
+
       response.render(
           'inicio',
           {
               usuario: 'Analy',
               arreglo: this._noticiaService.arreglo,
-              booleano: false
+              booleano: false,
+              mensaje: 'undefined'
           }
       )
 }
@@ -196,6 +209,35 @@ export class AppController {
 
     ){
       this._noticiaService.eliminar(Number(idNoticia));
+      response.redirect('/inicio')
+}
+
+@Get('actualizar-noticia/:idNoticia')
+    actualizarNoticiaVista(
+        @Res() response,
+        @Param('idNoticia') idNoticia: string,
+){
+      //el + transforma un string a numero
+    const noticiaEncontrada = this._noticiaService
+        .buscarPorId(+idNoticia);
+    response
+        .render(
+            'crear-noticia',
+            {
+                noticia:noticiaEncontrada
+            }
+        )
+}
+
+@Post('actualizar-noticia/:idNoticia')
+    actualizarNoticiaMetodo(
+        @Res() response,
+        @Param('idNoticia') idNoticia: string,
+        @Body() noticia: Noticia
+){
+      noticia.id=+idNoticia;
+      this._noticiaService.actualizar(+idNoticia,noticia);
+
       response.redirect('/inicio')
 }
 
