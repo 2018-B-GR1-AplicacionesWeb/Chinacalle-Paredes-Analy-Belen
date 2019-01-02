@@ -28,6 +28,28 @@ let AppController = class AppController {
     constructor(_appService, _noticiaService) {
         this._appService = _appService;
         this._noticiaService = _noticiaService;
+        this.arreglo = [
+            {
+                id: 1,
+                titulo: 'A',
+                descripcion: 'asdfghjkl'
+            },
+            {
+                id: 2,
+                titulo: 'B',
+                descripcion: 'asdfghjkl'
+            },
+            {
+                id: 3,
+                titulo: 'C',
+                descripcion: 'asdfghjkl'
+            },
+            {
+                id: 4,
+                titulo: 'D',
+                descripcion: 'asdfghjkl'
+            }
+        ];
         this.numeroRegistro = 5;
     }
     raiz(todosQueryParams, nombre) {
@@ -97,11 +119,19 @@ let AppController = class AppController {
             });
         }
     }
-    inicio(response) {
+    inicio(response, accion, titulo) {
+        let mensaje = undefined;
+        if (accion && titulo) {
+            switch (accion) {
+                case 'borrar':
+                    mensaje = `Registro ${titulo} eliminado`;
+            }
+        }
         response.render('inicio', {
             usuario: 'Analy',
             arreglo: this._noticiaService.arreglo,
-            booleano: false
+            booleano: false,
+            mensaje: 'undefined'
         });
     }
     crearNoticiaRuta(response) {
@@ -115,7 +145,18 @@ let AppController = class AppController {
         this._noticiaService.eliminar(Number(idNoticia));
         response.redirect('/inicio');
     }
-    root() {
+    actualizarNoticiaVista(response, idNoticia) {
+        const noticiaEncontrada = this._noticiaService
+            .buscarPorId(+idNoticia);
+        response
+            .render('crear-noticia', {
+            noticia: noticiaEncontrada
+        });
+    }
+    actualizarNoticiaMetodo(response, idNoticia, noticia) {
+        noticia.id = +idNoticia;
+        this._noticiaService.actualizar(+idNoticia, noticia);
+        response.redirect('/inicio');
     }
 };
 __decorate([
@@ -181,8 +222,10 @@ __decorate([
 __decorate([
     common_1.Get('inicio'),
     __param(0, common_1.Res()),
+    __param(1, common_1.Query('accion')),
+    __param(2, common_1.Query('titulo')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], AppController.prototype, "inicio", null);
 __decorate([
@@ -208,6 +251,23 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], AppController.prototype, "eliminar", null);
+__decorate([
+    common_1.Get('actualizar-noticia/:idNoticia'),
+    __param(0, common_1.Res()),
+    __param(1, common_1.Param('idNoticia')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "actualizarNoticiaVista", null);
+__decorate([
+    common_1.Post('actualizar-noticia/:idNoticia'),
+    __param(0, common_1.Res()),
+    __param(1, common_1.Param('idNoticia')),
+    __param(2, common_1.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "actualizarNoticiaMetodo", null);
 AppController = __decorate([
     common_1.Controller(),
     __metadata("design:paramtypes", [app_service_1.AppService,

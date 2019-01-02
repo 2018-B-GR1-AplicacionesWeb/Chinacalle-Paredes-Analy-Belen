@@ -1,0 +1,43 @@
+<%const existeMensaje = typeof mensaje !== "undefined"%>
+
+<style>
+    table,th,td{
+        border: 1px mediumblue;
+        border-collapse: collapse;
+    }
+</style>
+
+
+<% if (existeMensaje){%>
+    <p>MENSAJE: <%= mensaje %></p>
+<%} %>
+
+<h1><%= usuario%></h1>
+<h3>PRUEBA</h3>
+<% if (booleano){%>
+    <p>Usted creo una cancion</p>
+<%} %>
+
+
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>Autor</th>
+        <th>Año</th>
+    </tr>
+    <% arreglo.forEach((cancion)=> {%>
+        <tr>
+            <td><%= cancion.id%></td>
+            <td><%= cancion.nombre%></td>
+            <td><%= cancion.autor.nombre%></td>
+            <td><%= cancion.anio%></td>
+            <td>
+                <!--
+                <form action="/eliminar/"></form>
+                -->
+
+            </td>
+        </tr>
+    <%})%>
+</table>

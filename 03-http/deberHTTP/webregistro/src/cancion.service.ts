@@ -5,8 +5,8 @@ const fs = require('fs');
 @Injectable()
 export class CancionService {
     NOMBRE_BD = 'C:\\Users\\analy.chinacalle\\Documents\\GitHub\\Chinacalle-Paredes-Analy-Belen\\03-http\\deberHTTP\\webregistro\\canciones.json';
-    async listar(): Promise<Base> {
-        const promesaLeer = (): Promise<Base> => {
+    async listar(): Promise<string> {
+        const promesaLeer = (): Promise<string> => {
             // @ts-ignore
             return new Promise(
                 (resolve) => {
@@ -30,7 +30,7 @@ export class CancionService {
             );
         };
         try{
-            const  bdd:Base = await promesaLeer();
+            const  bdd:string = await promesaLeer();
             return promesaLeer();
         }catch (e) {
             console.error(e);

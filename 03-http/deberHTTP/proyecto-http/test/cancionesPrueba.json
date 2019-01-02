@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "nombre": "cancion1",
+    "autor": {
+      "id": 1,
+      "nombre": "autor1"
+    },
+    "anio": "2000"
+  },
+  {
+    "id": 2,
+    "nombre": "cancion2",
+    "autor": {
+      "id": 2,
+      "nombre": "autor2"
+    },
+    "anio": "2018"
+  },
+  {
+    "id": 3,
+    "nombre": "cancion3",
+    "autor": {
+      "id": 3,
+      "nombre": "autor3"
+    },
+    "anio": "2003"
+  },
+  {
+    "id": 4,
+    "nombre": "cancion4",
+    "autor": {
+      "id": 4,
+      "nombre": "autor4"
+    },
+    "anio": "2004"
+  }
+]

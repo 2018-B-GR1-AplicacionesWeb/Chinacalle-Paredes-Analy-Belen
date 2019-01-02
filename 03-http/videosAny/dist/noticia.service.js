@@ -49,11 +49,16 @@ let NoticiaService = class NoticiaService {
         return registroEliminado;
     }
     actualizar(idNoticia, nuevaNoticia) {
+        const noticia = this.buscarPorId(idNoticia);
+        const indiceNoticia = noticia.id;
+        this.arreglo[indiceNoticia] = nuevaNoticia;
+        return this.arreglo[indiceNoticia];
+    }
+    buscarPorId(idNoticia) {
         const indiceNoticia = this.arreglo
             .findIndex((noticia) => {
             return noticia.id === idNoticia;
         });
-        this.arreglo[indiceNoticia] = nuevaNoticia;
         return this.arreglo[indiceNoticia];
     }
 };
