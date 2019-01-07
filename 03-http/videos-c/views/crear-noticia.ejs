@@ -1,0 +1,37 @@
+<% const estaCreando = typeof noticia === "undefined"%>
+
+
+<h1> <%= estaCreando ? 'Crear':'Actualizar' %> noticia</h1>
+
+<p><%= estaCreando ? 'Cree':'Actualice' %> una noticia</p>
+
+<!-- emmet -->
+<form action="/noticia/<%= estaCreando ? 'crear' : 'actualizar' %>-noticia/<%= estaCreando ? '' : noticia.id %>"
+      method="POST">
+
+    <div>
+        <label for="titulo">Titulo</label>
+        <input id="titulo"
+               name="titulo"
+               type="text"
+               value="<%= estaCreando ? '' : noticia.titulo %>"
+        >
+    </div>
+
+    <div>
+        <label for="descripcion">Descripcion</label>
+        <textarea id="descripcion"
+                  name="descripcion"
+                  cols="30" rows="4">
+            <%= estaCreando ? '' : noticia.descripcion %>
+
+        </textarea>
+    </div>
+
+    <button><%= estaCreando ? 'Crear' : 'Actualizar' %> noticia</button>
+
+</form>
+
+<a href="/noticia/inicio">
+    <button>Regresar</button>
+</a>

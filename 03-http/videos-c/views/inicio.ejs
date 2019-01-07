@@ -19,8 +19,16 @@
 <% if(booleano){%>
     <p> Usted creo una noticia</p>
 <% }%>
+<form onsubmit="imprimirEnConsola()">
 
-<a href="/crear-noticia">
+    <label for="busqueda">Busqueda</label>
+    <input id="busqueda" type="text">
+
+    <button>Buscar</button>
+
+</form>
+
+<a href="/noticia/crear-noticia">
     <button> Crear noticia</button>
 </a>
 
@@ -38,6 +46,17 @@
             <!-- td -> table detail -->
             <td><%= noticia.titulo %></td>
             <td><%= noticia.descripcion %></td>
+            <td>
+                <form action="/noticia/eliminar/<%= noticia.id %>" method="POST">
+                    <!--<button type="button"> clickea sin problemas</button>
+                    <button>Yo tambien envio informacion</button>
+                    -->
+                    <button type="submit"> Eliminar</button>
+                </form>
+                <a href="/noticia/actualizar-noticia/<%= noticia.id %>">
+                    <button>Actualizar</button>
+                </a>
+            </td>
         </tr>
     <% }) %>
 </table>

@@ -154,7 +154,7 @@ export class AppController {
               usuario: 'Analy',
               arreglo: this._noticiaService.arreglo,
               booleano: false,
-              amansaje: mensaje
+              mensaje: mensaje
           }
       )
 }
