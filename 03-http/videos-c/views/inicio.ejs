@@ -19,10 +19,10 @@
 <% if(booleano){%>
     <p> Usted creo una noticia</p>
 <% }%>
-<form onsubmit="imprimirEnConsola()">
+<form method="get" action="/noticia/inicio" >
 
     <label for="busqueda">Busqueda</label>
-    <input id="busqueda" type="text">
+    <input id="busqueda" type="text" name="busqueda">
 
     <button>Buscar</button>
 

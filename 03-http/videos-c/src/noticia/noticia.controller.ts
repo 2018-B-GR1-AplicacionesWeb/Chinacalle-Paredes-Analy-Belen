@@ -1,6 +1,8 @@
 import {Body, Controller, Get, Param, Post, Query, Res} from "@nestjs/common";
 import {Noticia} from "../app.controller";
 import {NoticiaS} from "./noticia.service";
+import {NoticiaEntity} from "./noticia.entity";
+import {FindManyOptions, Like} from "typeorm";
 
 @Controller('noticia')
 export class NoticiaController{
@@ -11,10 +13,11 @@ export class NoticiaController{
     @Get('inicio')
     async inicio(
         @Res() response,
-        @Query() consulta,
+        @Query('busqueda') busqueda,
         @Query('accion') accion: string,
         @Query('titulo') titulo: string
     ){
+
         let mensaje= undefined;
         if(accion &&titulo ){
             switch (accion) {
@@ -22,7 +25,24 @@ export class NoticiaController{
                     mensaje = `Registro ${titulo} eliminado`;
             }
         }
-        const noticias = await this._noticiaService_.buscar();
+        let noticias: NoticiaEntity[];
+        if(busqueda){
+            const consulta: FindManyOptions<NoticiaEntity> = {
+                where: [
+                    {
+                        titulo: Like(`%${busqueda}%`)
+                    }, //or2
+                    {
+                        descripcion: Like(`%${busqueda}%`)
+                    }
+                ]
+            };
+            //
+            noticias = await this._noticiaService_.buscar(consulta);
+        }else{
+            noticias = await this._noticiaService_.buscar();
+        }
+
         response.render(
             'inicio',
             {

@@ -1,8 +1,8 @@
 import {Injectable} from "@nestjs/common";
-import {Noticia} from "../../../videosAny/src/app.controller";
-import {NoticiaEntity} from "./noticia-entity";
+import {NoticiaEntity} from "./noticia.entity";
 import {InjectRepository} from '@nestjs/typeorm';
 import {FindManyOptions, Repository} from "typeorm";
+import {Noticia} from "../app.controller";
 
 @Injectable()
 export class NoticiaS {

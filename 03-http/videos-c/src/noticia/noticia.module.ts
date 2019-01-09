@@ -2,7 +2,7 @@ import {Module} from "@nestjs/common";
 import {NoticiaController} from "./noticia.controller";
 import {NoticiaS} from "./noticia.service";
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {NoticiaEntity} from "./noticia-entity";
+import {NoticiaEntity} from "./noticia.entity";
 @Module(
     {
         imports:[
