@@ -1,0 +1,31 @@
+p{
+    background-color: #17a2b8;
+}
+#titulo{
+    background-color: #1e7e34;
+}
+.rojo{
+    background-color: #721c24;
+}
+.amarillo{
+    background-color: #ffc107;
+}
+.azul{
+    background-color: #0062cc;
+}
+p.amarillo{
+    background-color: #ffc0cb;
+}
+p.amarillo.azul{
+    background-color: #000000;
+    color: #ffffff;
+}
+h1 + p{
+    background-color: greenyellow;
+}
+h1.amarillo + p.amarillo {
+    background-color: orange;
+}
+ul > li > span{
+    background-color: #800080;
+}

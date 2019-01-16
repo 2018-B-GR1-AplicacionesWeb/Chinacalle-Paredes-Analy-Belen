@@ -1,11 +1,15 @@
 import {Module} from "@nestjs/common";
 import{TypeOrmModule} from "@nestjs/typeorm"
 import {UsuarioService} from "./usuario.service";
+import {UsuarioEntity} from "./usuario.entity";
 @Module({
     imports:[
         TypeOrmModule
-            .forFeature()
+            .forFeature([
+                UsuarioEntity
+            ])
     ],
+
     providers:[
         UsuarioService
     ],
@@ -15,5 +19,4 @@ import {UsuarioService} from "./usuario.service";
 
 })
 export class UsuarioModule {
-
 }
