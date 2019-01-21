@@ -1,0 +1,19 @@
+
+.azul{
+    border: 1px darkblue;
+    padding: 20px;
+    color: darkblue;
+    border-collapse: collapse;
+    text-align: center;
+}
+table, th, td{
+    border: 1px solid blue;
+    border-collapse: collapse;
+}
+div > h1{
+    border: 1px solid blue;
+    font-size: 100%;
+}
+.gris{
+    background-color: lightgray;
+}

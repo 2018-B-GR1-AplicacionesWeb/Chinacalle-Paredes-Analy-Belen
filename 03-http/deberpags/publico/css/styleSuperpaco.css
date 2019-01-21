@@ -1,0 +1,23 @@
+.blancoYgris{
+    border: 1px white;
+    background-color: white;
+    border-collapse: collapse;
+    color: darkslategray;
+    text-align: center;
+    padding: 10px;
+}
+table, th, td{
+    border: 1px solid blue;
+    border-collapse: collapse;
+}
+div > h1{
+    border: 1px white;
+    font-size: 100%;
+}
+
+.gris{
+    background-color: lightgray;
+}
+.blanco{
+    background-color: white;
+}
