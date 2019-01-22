@@ -1,0 +1,1 @@
+{"version":3,"file":"cancion-entity.js","sourceRoot":"","sources":["../../src/cancion/cancion-entity.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,qCAAsE;AAGtE,IAAa,aAAa,GAA1B,MAAa,aAAa;CAWzB,CAAA;AATG;IADC,gCAAsB,EAAE;;yCACd;AAOX;IAJC,eAAK,EAAE;IACP,gBAAM,CAAC;QACJ,IAAI,EAAE,gBAAgB;KACzB,CAAC;;6CACa;AATN,aAAa;IADzB,gBAAM,CAAC,SAAS,CAAC;GACL,aAAa,CAWzB;AAXY,sCAAa"}
