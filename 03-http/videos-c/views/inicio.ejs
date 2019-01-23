@@ -6,20 +6,125 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Gestion de noticias</title>
-    <link rel="stylesheet" href="../publico/bootstrap/css/bootstrap.css">
-    <link rel="stylesheet" href="../publico/css/estilos-generales.css">
+<!--    <link rel="stylesheet" href="/03-http/bootstrap-4.1.3-dist/css/bootstrap.css"> -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/estilos-generales.css">
+    <link rel="stylesheet" href="/css/animate.css">
+
+
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Dropdown
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Disabled</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+<br>
+<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img height="100%" class="d-block w-100" src="http://www.teleamazonas.com/wp-content/uploads/2018/08/gato-1.jpg" alt="First slide">
+        </div>
+        <div class="carousel-item">
+            <img height="100%" class="d-block w-100" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShJxPettcCu93YmFmmOWxOc1RdQVIaengp47q6l1O5Hy0XFfYZ" alt="Second slide">
+        </div>
+        <div class="carousel-item">
+            <img height="100%" class="d-block w-100" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZwfU3UzpZ1I_6ehlsGjIZvxDG5ykfCY2-tIojX3oODzO1qFAsyA" alt="Third slide">
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+<br>
+<!--  -->
+<!-- Button trigger modal -->
+<button type="button"
+        class="btn btn-primary"
+        data-toggle="modal"
+        data-target="#exampleModalLong">
+    Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade"
+     id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<button type="button"
+        class="btn btn-lg btn-danger popover-contenido"
+        data-toggle="popover"
+        title="Titulo"
+        data-content="cosasss"
+        data-placement=" bottom"
+> Ejemplo de popover
+</button>
 
 <div class="container">
     <!--Etiqueta stile lee CSS -->
     <% const existeMensaje = typeof mensaje!== "undefined"%>
-    <style>
+ <!--   <style>
         table, th, td{
             border: 1px solid blue;
             border-collapse: collapse;
         }
     </style>
+    -->
     <%if(existeMensaje){ %>
     <div class=" <%=clase%>" role="alert">
         <span class="font-weight-bold">
@@ -44,6 +149,9 @@
             <div class="col-sm-9">
                 <label for="busqueda">Busqueda</label>
                 <input id="busqueda" type="text" name="busqueda">
+                <br>
+                <label for="fecha">Seleccionar fecha</label>
+                <input id="fecha" type="date" name="fecha">
             </div>
             <div class="col-sm-3">
                 <button class="btn btn-outline-success btn-block">
@@ -67,45 +175,128 @@
     <h2> lista de noticias</h2>
     <p>Listado de las noticias, actualice o elimine noticiss</p>
 
-    <table class="table table-hover">
-        <!-- tr -> table row -->
-        <thead>
-        <tr>
-            <!-- th -> table header -->
-            <th width="30%">Titulo</th>
-            <th width="50%">Descripcion</th>
-            <th width="20%">Acciones</th>
-        </tr>
-        </thead>
-        <!-- tr -> table row -->
-        <tbody>
-        <% arreglo.forEach( (noticia)=> { %>
-            <tr>
-                <!-- td -> table detail -->
-                <td><%= noticia.titulo %></td>
-                <td><%= noticia.descripcion %></td>
-                <td>
-                    <form action="/noticia/eliminar/<%= noticia.id %>" method="POST">
-                        <!--<button type="button"> clickea sin problemas</button>
-                        <button>Yo tambien envio informacion</button>
-                        -->
-                        <button class="btn btn-outline-danger btn-block"
-                                type="submit">
-                            Eliminar
-                        </button>
-                    </form>
-                    <a class="quitar-link"
-                       href="/noticia/actualizar-noticia/<%= noticia.id %>">
-                        <button class="btn btn-outline-info btn-block">
-                            Actualizar
-                        </button>
-                    </a>
-                </td>
-            </tr>
-        <% }) %>
-        </tbody>
+    <br>
+    <form action="">
+        <div class="form-group">
+            <label for="paises">seleccionar un pais</label>
+            <select  class="form-control" id="paises">
+                <option value="-1">Escoja</option>
+                <option value="1">Ecuador</option>
+                <option value="2">Argentina</option>
+                <option value="3">Francia</option>
+                <option value="4">Japon</option>
+            </select>
+        </div>
+        <div class="form-group" >
+            <label for="ciudades" >seleccionar ciudad</label>
+            <select disabled class="form-control" id="ciudades"></select>
+        </div>
+    </form>
+    <br>
 
-    </table>
+
+    <div class="scroll-tabla">
+        <table class="table table-hover animated slideInLeft">
+            <!-- tr -> table row -->
+            <thead>
+            <tr>
+                <!-- th -> table header -->
+                <th width="30%">Titulo</th>
+                <th width="50%">Descripcion</th>
+                <th width="20%">Acciones</th>
+            </tr>
+            </thead>
+            <!-- tr -> table row -->
+            <tbody>
+            <% arreglo.forEach( (noticia)=> { %>
+                <tr>
+                    <!-- td -> table detail -->
+                    <td><%= noticia.titulo %></td>
+                    <td><%= noticia.descripcion %></td>
+                    <td>
+                        <form action="/noticia/eliminar/<%= noticia.id %>" method="POST">
+                            <!--<button type="button"> clickea sin problemas</button>
+                            <button>Yo tambien envio informacion</button>
+                            -->
+                            <button class="btn btn-outline-danger btn-block"
+                                    type="submit">
+                                Eliminar
+                            </button>
+                        </form>
+                        <a class="quitar-link"
+                           href="/noticia/actualizar-noticia/<%= noticia.id %>">
+                            <button class="btn btn-outline-info btn-block">
+                                Actualizar
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            <% }) %>
+            </tbody>
+
+        </table>
+    </div>
+
+
+
+
 </div>
+
+
+<script src="/js/jquery.js"></script>
+<script src="/js/popper.js"></script>
+<script src="/bootstrap/js/bootstrap.js"></script>
+<script>
+    //nuestros js
+    $(function () {
+        $('.popover-contenido').popover({
+            container: 'body'
+        })
+    })
+    //Escuchar los cambios
+    const etiquetaSelectPaises = document.getElementById('paises')
+    const etiquetaSelectCiudades = document.getElementById('ciudades')
+    let valorActualPais = etiquetaSelectPaises.value;
+    const ciudades =[
+        {
+            id: 1,
+            idPais: 1,
+            nombre: 'Quito'
+        },
+        {
+            id: 2,
+            idPais: 2,
+            nombre: 'Buenos Aires'
+        },
+        {
+            id: 3,
+            idPais: 3,
+            nombre: 'Paris'
+        },
+        {
+            id: 4,
+            idPais: 4,
+            nombre: 'Tokyo'
+        }
+    ]
+    etiquetaSelectPaises.onchange = (evento)=>{
+        valorActualPais = etiquetaSelectPaises.value;
+        console.log('Valor actual del pais: ', valorActualPais);
+
+        //http get controlador idPais = valorActualPais
+        const ciudadesEncontradas = ciudades
+            .filter(
+                (ciudad)=>{
+                    return ciudad.idPais === +valorActualPais
+                }
+            );
+        console.log(ciudadesEncontradas)
+        etiquetaSelectCiudades.disabled= false;
+
+    }
+
+
+</script>
+
 </body>
 </html>
