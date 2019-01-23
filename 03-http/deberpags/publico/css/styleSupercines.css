@@ -1,10 +1,21 @@
 
 .azul{
     border: 1px darkblue;
-    padding: 20px;
+    padding: 10px 15px;
     color: darkblue;
     border-collapse: collapse;
     text-align: center;
+    font-family: inherit;
+
+}
+.negro{
+    background-color: #1b1e21;
+}
+.azulboton{
+    padding: 10px 15px ;
+    text-align: center;
+    font-family: inherit;
+    width: 100%;
 }
 table, th, td{
     border: 1px solid blue;
@@ -16,4 +27,26 @@ div > h1{
 }
 .gris{
     background-color: lightgray;
+}
+
+.logos{
+    background: url(https://www.supercines.com/Images/spritesheet.png) no-repeat;
+    display: inline-block;
+}
+
+.logo-cine{
+    width: 252px;
+    height: 67px;
+    background-position: -5px -241px;
+}
+
+.seleccionCiudad-Complejo{
+    text-align: left;
+    padding: 20px ;
+}
+
+.naranja{
+    color: orange;
+    font-size: 90%;
+    padding: 20px 15px;
 }
