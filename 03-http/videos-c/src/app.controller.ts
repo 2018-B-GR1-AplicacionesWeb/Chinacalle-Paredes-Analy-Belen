@@ -119,6 +119,7 @@ export class AppController {
         @Res() res,
         @Session() sesion
     ){
+
       const respuesta = await this._usuarioService_
           .autenticar(username,password);
 
