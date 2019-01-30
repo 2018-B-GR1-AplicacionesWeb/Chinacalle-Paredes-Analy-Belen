@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
-import {CancionEntity} from "./cancion-entity";
+import {CancionEntity} from "./cancion.entity";
 import {FindManyOptions, Repository} from "typeorm";
 import {Cancion} from "../app.controller";
 

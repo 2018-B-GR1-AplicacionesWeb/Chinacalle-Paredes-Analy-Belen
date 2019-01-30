@@ -1,7 +1,8 @@
-import {Controller, Get, Param, Post, Query, Res} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post, Query, Res} from "@nestjs/common";
 import {CancionService} from "./cancion.service";
-import {CancionEntity} from "./cancion-entity";
+import {CancionEntity} from "./cancion.entity";
 import {FindManyOptions, Like} from "typeorm";
+import {Cancion} from "../../dist/app.controller";
 
 @Controller('cancion')
 export class CancionController {
@@ -19,15 +20,27 @@ export class CancionController {
         if(accion && nombre){
             switch(accion){
                 case 'borrar':
-                    mensaje = `Registro ${nombre} eliminado`
+                    mensaje = `Registro ${nombre} eliminado`;
+                    break;
+                case 'actualizar':
+                    mensaje = `Registro ${nombre} actualizado.`;
+                    break;
+
+                case 'crear':
+                    mensaje = `Registro ${nombre} creado.`;
+                    break;
             }
         }
         let canciones: CancionEntity[];
+        
         if (busqueda){
             const consulta: FindManyOptions<CancionEntity> = {
                 where:[
                     {
                         nombre: Like(`%${busqueda}`)
+                    },
+                    {
+                        anio: Like(`%${busqueda}%`)
                     }
                 ]
             };
@@ -56,8 +69,28 @@ export class CancionController {
         const cancion = await this._cancionService.buscarPorId(+idCancion);
 
         await this._cancionService.eliminar(Number(idCancion));
+        const parametrosConsulta = `?accion=borrar&titulo=${
+            cancion.nombre
+            }`;
+        response.redirect('cancion/inicio'+ parametrosConsulta)
+    }
 
+    @Get('crear-cancion')
+    crearcancionRuta(
+        @Res() response
+    ){
+        response.render('crear-cancion')
+    }
 
+    @Post('crear-cancion')
+    crearcancionFuncion(
+        @Res() response,
+        @Body() cancion: Cancion
+    ){
+        const respuesta = this._cancionService.crear(cancion);
+        const parametrosConsulta = `?accion=crear&titulo=${cancion.nombre}`;
+
+        response.redirect('cancion/inicio'+ parametrosConsulta)
     }
 
 
