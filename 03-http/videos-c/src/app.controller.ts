@@ -8,7 +8,7 @@ import {
     Param,
     InternalServerErrorException,
     HttpCode,
-    Session
+    Session, UseInterceptors, FileInterceptor, UploadedFile
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import {NoticiaS} from "./noticia/noticia.service";
@@ -139,6 +139,25 @@ export class AppController {
         sesion.username = undefined;
         sesion.destroy();
         res.redirect('login');
+    }
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file',
+                                    {dest:__dirname+ '/../archivos'}))
+    uploadFile(
+        @UploadedFile() file
+    ){
+      console.log(__dirname+ '/../archivos');
+        console.log(file)
+    }
+
+    @Get('download')
+    downloadFile(
+        @Res() res,
+        @Query('id') idArchivo: string
+    ){
+      const carpetaURI = __dirname+ '/../archivos/';
+      res.download(carpetaURI+ idArchivo,
+                    'proyecto.pdf');
     }
 
 

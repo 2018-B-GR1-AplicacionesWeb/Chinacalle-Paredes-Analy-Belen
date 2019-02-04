@@ -16,7 +16,7 @@ import {UsuarioModule} from "./usuario/usuario.module";
           type: 'mysql',
           //host: 192.168.99.100 ,
           host: 'localhost',
-          port: 32769,
+          port: 32775,
           username: 'root',
           password: 'root',
           database: 'web',
